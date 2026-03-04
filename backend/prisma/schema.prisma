@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress VideoProgress[]
+
+  @@map("users")
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  order       Int      @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  videos Video[]
+
+  @@map("modules")
+}
+
+model Video {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  url         String
+  duration    Int      // duração em segundos
+  order       Int
+  moduleId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  module   Module          @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress VideoProgress[]
+
+  @@unique([moduleId, order])
+  @@map("videos")
+}
+
+model VideoProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  videoId     String
+  completed   Boolean  @default(false)
+  watchedTime Int      @default(0) // tempo assistido em segundos
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@map("video_progress")
+}

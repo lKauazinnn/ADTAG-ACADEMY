@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:4040/api/tunnels)",
+      "Bash(curl -s http://localhost:4041/api/tunnels)",
+      "Bash(ngrok config check)",
+      "Bash(ngrok config edit --help)",
+      "Bash(cmd.exe /c \"dir %LOCALAPPDATA%\\\\ngrok /b 2>nul\")",
+      "Bash(cmd.exe /c \"dir %USERPROFILE%\\\\AppData\\\\Local\\\\ngrok /b 2>nul\")",
+      "Bash(curl -s http://localhost:4042/api/tunnels)",
+      "Bash(curl -s -X POST http://localhost:4040/api/tunnels -H \"Content-Type: application/json\" -d '{\"\"name\"\":\"\"backend\"\",\"\"proto\"\":\"\"http\"\",\"\"addr\"\":\"\"3333\"\"}')",
+      "WebFetch(domain:www.youtube.com)"
+    ]
+  }
+}
