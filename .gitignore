@@ -30,3 +30,9 @@ prisma/migrations/
 # Logs
 logs/
 *.log
+
+# Claude Code settings
+.claude/
+
+# Python venv
+.venv/

@@ -35,6 +35,11 @@ app.get('/debug', async (req, res) => {
   res.json({ data, error, url: process.env.SUPABASE_URL, hasKey: !!process.env.SUPABASE_SERVICE_KEY });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Em dev local, inicia o servidor normalmente
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
