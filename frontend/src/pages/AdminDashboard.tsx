@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import api from '../services/api';
 
@@ -154,7 +153,6 @@ const iCls = "w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-all"
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 const AdminDashboard: React.FC = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('stats');
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);

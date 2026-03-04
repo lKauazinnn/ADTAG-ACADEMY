@@ -22,7 +22,7 @@ const VideoPlayer: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const navigate = useNavigate();
-  const progressInterval = useRef<NodeJS.Timeout>();
+  const progressInterval = useRef<ReturnType<typeof setInterval>>();
   const currentTime = useRef(0);
 
   useEffect(() => {
