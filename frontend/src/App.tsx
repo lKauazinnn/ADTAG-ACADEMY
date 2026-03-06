@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import ModuleDetail from './pages/ModuleDetail';
 import VideoPlayer from './pages/VideoPlayer';
 import AdminDashboard from './pages/AdminDashboard';
+import SocialMedia from './pages/SocialMedia';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -102,6 +103,14 @@ function App() {
               <AdminRoute>
                 <AdminDashboard />
               </AdminRoute>
+            }
+          />
+          <Route
+            path="/social-media"
+            element={
+              <PrivateRoute>
+                <SocialMedia />
+              </PrivateRoute>
             }
           />
           <Route path="/" element={<Navigate to="/dashboard" />} />

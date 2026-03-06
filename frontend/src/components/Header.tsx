@@ -33,6 +33,28 @@ const Header: React.FC = () => {
 
           </div>
 
+          {/* Nav central */}
+          <nav className="flex items-center gap-1">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg transition-all uppercase tracking-wider"
+              style={{ background: 'transparent', color: '#6b6b8a', border: '1px solid transparent' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c8e8'; (e.currentTarget as HTMLButtonElement).style.background = '#1a1a24'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#1e1e2e'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
+            >
+              Editor
+            </button>
+            <button
+              onClick={() => navigate('/social-media')}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg transition-all uppercase tracking-wider"
+              style={{ background: 'transparent', color: '#6b6b8a', border: '1px solid transparent' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E1306C'; (e.currentTarget as HTMLButtonElement).style.background = '#E1306C18'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E1306C33'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
+            >
+              Social Media
+            </button>
+          </nav>
+
           {/* Direita */}
           <div className="flex items-center gap-3">
             <span className="hidden sm:block text-sm" style={{ color: '#6b6b8a' }}>

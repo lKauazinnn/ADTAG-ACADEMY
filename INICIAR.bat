@@ -12,11 +12,11 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5173 ^| findstr LISTENING') 
 timeout /t 1 /nobreak >nul
 echo.
 echo  [1/2] Iniciando BACKEND (porta 3333)...
-start "Backend - API" cmd /k "cd backend && npm run dev"
+start "Backend - API" cmd /k "cd /d "%~dp0backend" && npm run dev"
 timeout /t 3 /nobreak >nul
 
 echo  [2/2] Iniciando FRONTEND (porta 5173)...
-start "Frontend - React" cmd /k "cd frontend && npm run dev"
+start "Frontend - React" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 timeout /t 3 /nobreak >nul
 
 echo.
