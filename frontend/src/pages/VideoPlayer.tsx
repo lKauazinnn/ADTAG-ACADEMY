@@ -138,8 +138,8 @@ const VideoPlayer: React.FC = () => {
             </div>
 
             {/* Info */}
-            <div className="rounded-2xl border overflow-hidden" style={{ background: '#12121a', borderColor: '#1e1e2e' }}>
-              <div className="h-[2px]" style={{ background: completed ? 'linear-gradient(90deg,#31A8FF,#0ea5e9)' : 'linear-gradient(90deg,#9333ea,#EA77FF)' }} />
+            <div className="rounded-2xl overflow-hidden" style={{ background: '#12121a', border: '1px solid #252538', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}>
+              <div className="h-[3px] animate-gradient-shift" style={{ background: completed ? 'linear-gradient(90deg,#31A8FF,#0ea5e9,#31A8FF)' : 'linear-gradient(90deg,#9333ea,#EA77FF,#9333ea)', backgroundSize: '200% 100%' }} />
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
@@ -158,9 +158,9 @@ const VideoPlayer: React.FC = () => {
                 </div>
 
                 <h1 className="text-lg font-black mb-1 tracking-tight" style={{ color: '#fafafa' }}>{video.title}</h1>
-                <p className="text-sm mb-4 leading-relaxed" style={{ color: '#fafafa' }}>{video.description}</p>
+                <p className="text-sm mb-4 leading-relaxed" style={{ color: '#9494b8' }}>{video.description}</p>
 
-                <div className="flex items-center gap-3 text-xs mb-4" style={{ color: '#fafafa' }}>
+                <div className="flex items-center gap-3 text-xs mb-4" style={{ color: '#6b6b8a' }}>
                   <span className="flex items-center gap-1.5">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -189,15 +189,15 @@ const VideoPlayer: React.FC = () => {
 
           {/* Sidebar */}
           <div>
-            <div className="rounded-2xl border p-5 sticky top-4" style={{ background: '#12121a', borderColor: '#1e1e2e' }}>
+            <div className="rounded-2xl p-5 sticky top-4" style={{ background: '#12121a', border: '1px solid #252538', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}>
               {/* Módulo */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#31A8FF' }}>Módulo atual</p>
               <h3 className="text-sm font-black mb-1" style={{ color: '#fafafa' }}>{video.module.title}</h3>
-              <p className="text-xs mb-5" style={{ color: '#fafafa' }}>Aula {video.order}</p>
+              <p className="text-xs mb-5" style={{ color: '#9494b8' }}>Aula {video.order}</p>
 
               {/* Ferramentas abordadas */}
               <div className="mb-5">
-                <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#fafafa' }}>Ferramentas</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#9494b8' }}>Ferramentas</p>
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { abbr: 'Ps', color: '#31A8FF' },
@@ -220,7 +220,7 @@ const VideoPlayer: React.FC = () => {
                   </svg>
                   <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#9333ea' }}>Dica do instrutor</span>
                 </div>
-                <p className="text-xs leading-relaxed" style={{ color: '#fafafa' }}>
+                <p className="text-xs leading-relaxed" style={{ color: '#9494b8' }}>
                   Assista até o fim e clique em "Marcar como Concluída" para desbloquear a próxima aula.
                 </p>
               </div>

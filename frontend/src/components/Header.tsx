@@ -1,10 +1,16 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isEditorRoute = location.pathname === '/dashboard' ||
+    location.pathname.startsWith('/module') ||
+    location.pathname.startsWith('/video');
+  const isSocialRoute = location.pathname === '/social-media';
 
   const handleLogout = () => {
     logout();
@@ -37,19 +43,27 @@ const Header: React.FC = () => {
           <nav className="flex items-center gap-1">
             <button
               onClick={() => navigate('/dashboard')}
-              className="text-xs font-semibold px-3.5 py-2 rounded-lg transition-all uppercase tracking-wider"
-              style={{ background: 'transparent', color: '#6b6b8a', border: '1px solid transparent' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c8c8e8'; (e.currentTarget as HTMLButtonElement).style.background = '#1a1a24'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#1e1e2e'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg uppercase tracking-wider"
+              style={{
+                background: isEditorRoute ? 'rgba(49,168,255,0.08)' : 'transparent',
+                color: isEditorRoute ? '#31A8FF' : '#6b6b8a',
+                border: isEditorRoute ? '1px solid rgba(49,168,255,0.2)' : '1px solid transparent',
+              }}
+              onMouseEnter={e => { if (isEditorRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#c8c8e8'; (e.currentTarget as HTMLButtonElement).style.background = '#1a1a24'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#1e1e2e'; }}
+              onMouseLeave={e => { if (isEditorRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
             >
               Editor
             </button>
             <button
               onClick={() => navigate('/social-media')}
-              className="text-xs font-semibold px-3.5 py-2 rounded-lg transition-all uppercase tracking-wider"
-              style={{ background: 'transparent', color: '#6b6b8a', border: '1px solid transparent' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#E1306C'; (e.currentTarget as HTMLButtonElement).style.background = '#E1306C18'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E1306C33'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg uppercase tracking-wider"
+              style={{
+                background: isSocialRoute ? 'rgba(225,48,108,0.08)' : 'transparent',
+                color: isSocialRoute ? '#E1306C' : '#6b6b8a',
+                border: isSocialRoute ? '1px solid rgba(225,48,108,0.2)' : '1px solid transparent',
+              }}
+              onMouseEnter={e => { if (isSocialRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#E1306C'; (e.currentTarget as HTMLButtonElement).style.background = '#E1306C18'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#E1306C33'; }}
+              onMouseLeave={e => { if (isSocialRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
             >
               Social Media
             </button>

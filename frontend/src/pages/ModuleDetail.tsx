@@ -79,9 +79,9 @@ const ModuleDetail: React.FC = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
 
         {/* Cabeçalho do módulo */}
-        <div className="rounded-2xl overflow-hidden mb-5 border" style={{ background: '#12121a', borderColor: '#1e1e2e' }}>
+        <div className="rounded-2xl overflow-hidden mb-5" style={{ background: '#12121a', border: '1px solid #252538', boxShadow: '0 4px 30px rgba(0,0,0,0.5), 0 0 60px rgba(49,168,255,0.04)' }}>
           {/* Faixa topo */}
-          <div className="h-[2px]" style={{ background: 'linear-gradient(90deg,#31A8FF,#9333ea,#EA77FF)' }} />
+          <div className="h-[3px] animate-gradient-shift" style={{ background: 'linear-gradient(90deg,#31A8FF,#9333ea,#EA77FF,#31A8FF)', backgroundSize: '200% 100%' }} />
 
           <div className="p-6">
             <button
@@ -98,7 +98,7 @@ const ModuleDetail: React.FC = () => {
             </button>
 
             <h1 className="text-xl font-black mb-1.5 tracking-tight" style={{ color: '#fafafa' }}>{module.title}</h1>
-            <p className="text-sm mb-5 leading-relaxed" style={{ color: '#fafafa' }}>{module.description}</p>
+            <p className="text-sm mb-5 leading-relaxed" style={{ color: '#9494b8' }}>{module.description}</p>
 
             {/* Barra de progresso */}
             <div className="flex items-center justify-between mb-1.5">
@@ -112,7 +112,7 @@ const ModuleDetail: React.FC = () => {
 
             {/* Metadados */}
             <div className="flex items-center gap-5 mb-5">
-              <span className="flex items-center gap-1.5 text-xs" style={{ color: '#fafafa' }}>
+              <span className="flex items-center gap-1.5 text-xs" style={{ color: '#9494b8' }}>
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
                 </svg>
@@ -153,15 +153,17 @@ const ModuleDetail: React.FC = () => {
               <div
                 key={video.id}
                 onClick={() => handleVideoClick(video.id, canWatch)}
-                className="flex items-center gap-4 px-5 py-4 rounded-xl border transition-all"
+                className="flex items-center gap-4 px-5 py-4 rounded-xl"
                 style={{
                   background: '#12121a',
-                  borderColor: video.completed ? 'rgba(49,168,255,0.25)' : '#1e1e2e',
-                  borderLeftWidth: 2,
-                  borderLeftColor: video.completed ? '#31A8FF' : canWatch ? '#9333ea' : '#1e1e2e',
+                  border: '1px solid ' + (video.completed ? 'rgba(49,168,255,0.2)' : '#1e1e2e'),
+                  borderLeft: `2px solid ${video.completed ? '#31A8FF' : canWatch ? '#9333ea' : '#1e1e2e'}`,
                   cursor: canWatch ? 'pointer' : 'not-allowed',
-                  opacity: canWatch ? 1 : 0.45,
+                  opacity: canWatch ? 1 : 0.4,
+                  transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
                 }}
+                onMouseEnter={e => { if (!canWatch) return; const el = e.currentTarget as HTMLDivElement; el.style.transform = 'translateX(3px)'; el.style.boxShadow = video.completed ? '0 4px 20px rgba(49,168,255,0.12)' : '0 4px 20px rgba(147,51,234,0.12)'; }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.transform = ''; el.style.boxShadow = ''; }}
               >
                 {/* Indicador visual */}
                 <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
@@ -187,17 +189,17 @@ const ModuleDetail: React.FC = () => {
                 {/* Conteúdo */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#fafafa' }}>Aula {video.order}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#6b6b8a' }}>Aula {video.order}</span>
                   </div>
                   <p className="text-sm font-semibold truncate" style={{ color: '#fafafa' }}>{video.title}</p>
                   {video.description && (
-                    <p className="text-xs mt-0.5 truncate" style={{ color: '#fafafa' }}>{video.description}</p>
+                    <p className="text-xs mt-0.5 truncate" style={{ color: '#9494b8' }}>{video.description}</p>
                   )}
                 </div>
 
                 {/* Duração */}
                 <div className="flex-shrink-0 text-right">
-                  <span className="text-xs font-mono" style={{ color: '#fafafa' }}>{formatDuration(video.duration)}</span>
+                  <span className="text-xs font-mono" style={{ color: '#6b6b8a' }}>{formatDuration(video.duration)}</span>
                   {video.watchedTime && video.watchedTime > 0 && !video.completed && (
                     <p className="text-[10px] mt-0.5" style={{ color: '#9333ea' }}>retomar</p>
                   )}

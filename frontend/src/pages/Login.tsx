@@ -40,34 +40,42 @@ const Login: React.FC = () => {
 
       {/* Glows */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute" style={{ top: '-15%', left: '-8%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(49,168,255,0.22), transparent 65%)' }} />
-        <div className="absolute" style={{ bottom: '-20%', right: '-8%', width: 800, height: 800, borderRadius: '50%', background: 'radial-gradient(circle, rgba(147,51,234,0.22), transparent 65%)' }} />
-        <div className="absolute" style={{ top: '40%', left: '40%', width: 450, height: 450, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,154,0,0.10), transparent 65%)' }} />
-        <div className="absolute" style={{ top: '20%', right: '10%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(234,119,255,0.12), transparent 65%)' }} />
-        <div className="absolute" style={{ bottom: '20%', left: '5%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(49,197,244,0.10), transparent 65%)' }} />
+        <div className="absolute" style={{ top: '-25%', left: '-20%', width: 900, height: 900, borderRadius: '50%', background: 'radial-gradient(circle, rgba(49,168,255,0.3), transparent 65%)' }} />
+        <div className="absolute" style={{ bottom: '-30%', right: '-20%', width: 1000, height: 1000, borderRadius: '50%', background: 'radial-gradient(circle, rgba(147,51,234,0.3), transparent 65%)' }} />
+        <div className="absolute" style={{ top: '35%', left: '35%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,154,0,0.07), transparent 65%)' }} />
+        <div className="absolute" style={{ top: '8%', right: '2%', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(234,119,255,0.18), transparent 65%)' }} />
+        <div className="absolute" style={{ bottom: '10%', left: '-5%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(49,197,244,0.16), transparent 65%)' }} />
+        {/* Vignette */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 50%, rgba(0,0,0,0.55) 100%)' }} />
       </div>
 
-      {/* Grid sutil */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.055]"
-        style={{ backgroundImage: 'linear-gradient(#9333ea 1px,transparent 1px),linear-gradient(90deg,#9333ea 1px,transparent 1px)', backgroundSize: '50px 50px' }} />
+      {/* Grid sutil com mask */}
+      <div className="pointer-events-none absolute inset-0" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',
+        backgroundSize: '52px 52px',
+        WebkitMaskImage: 'radial-gradient(ellipse 80% 100% at 50% 50%, black 30%, transparent 100%)',
+        maskImage: 'radial-gradient(ellipse 80% 100% at 50% 50%, black 30%, transparent 100%)',
+      }} />
 
       {/* Badges flutuantes das ferramentas */}
-      {toolBadges.map(t => (
-        <div key={t.abbr} className="pointer-events-none absolute select-none"
-          style={{ top: t.top, left: t.left, opacity: 0.28 }}>
-          <div style={{ width: 60, height: 60, borderRadius: 12, background: t.color + '33', border: `1px solid ${t.color}77`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: `0 0 18px ${t.color}44` }}>
-            <span style={{ fontSize: 16, fontWeight: 900, color: t.color, fontFamily: 'monospace', letterSpacing: '-0.02em' }}>{t.abbr}</span>
+      {toolBadges.map((t, i) => (
+        <div key={t.abbr} className="pointer-events-none absolute select-none animate-float"
+          style={{ top: t.top, left: t.left, opacity: 0.28, animationDelay: `${i * 0.6}s` }}>
+          <div style={{ width: 70, height: 70, borderRadius: 14, background: t.color + '22', border: `1px solid ${t.color}66`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: `0 0 28px ${t.color}55, 0 0 60px ${t.color}18` }}>
+            <span style={{ fontSize: 20, fontWeight: 900, color: t.color, fontFamily: 'monospace', letterSpacing: '-0.02em' }}>{t.abbr}</span>
           </div>
-          <p style={{ fontSize: 8, color: t.color, textAlign: 'center', marginTop: 4, fontWeight: 600, letterSpacing: '0.04em' }}>{t.name.toUpperCase()}</p>
+          <p style={{ fontSize: 8, color: t.color, textAlign: 'center', marginTop: 5, fontWeight: 700, letterSpacing: '0.06em', opacity: 0.9 }}>{t.name.toUpperCase()}</p>
         </div>
       ))}
 
       <div className="relative z-10 w-full max-w-[400px]">
+        {/* Gradient border wrapper */}
+        <div style={{ padding: 1.5, borderRadius: 20, background: 'linear-gradient(135deg, rgba(49,168,255,0.35), rgba(147,51,234,0.25), rgba(234,119,255,0.35))', boxShadow: '0 0 70px rgba(49,168,255,0.12), 0 0 140px rgba(147,51,234,0.1), 0 50px 120px rgba(0,0,0,0.95)' }}>
         {/* Card */}
-        <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ background: '#12121a', border: '1px solid #1e1e2e' }}>
+        <div className="rounded-2xl overflow-hidden" style={{ background: '#0b0b14' }}>
 
           {/* Topo colorido */}
-          <div className="h-[3px]" style={{ background: 'linear-gradient(90deg,#31A8FF,#9333ea,#EA77FF,#FF9A00)' }} />
+          <div className="h-[4px] animate-gradient-shift" style={{ background: 'linear-gradient(90deg,#31A8FF,#9333ea,#EA77FF,#FF9A00,#31A8FF)', backgroundSize: '200% 100%' }} />
 
           <div className="p-8">
             {/* Logo */}
@@ -95,9 +103,9 @@ const Login: React.FC = () => {
                 <input
                   type="email" value={email} onChange={e => setEmail(e.target.value)} required
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                  style={{ background: '#1a1a25', border: '1px solid #1e1e2e', color: '#fafafa' }}
-                  onFocus={e => (e.target.style.borderColor = '#31A8FF55')}
-                  onBlur={e => (e.target.style.borderColor = '#1e1e2e')}
+                  style={{ background: '#13131e', border: '1px solid #252540', color: '#fafafa' }}
+                  onFocus={e => { e.target.style.borderColor = '#31A8FF55'; e.target.style.boxShadow = '0 0 0 3px rgba(49,168,255,0.07)'; }}
+                  onBlur={e => { e.target.style.borderColor = '#1e1e2e'; e.target.style.boxShadow = ''; }}
                   placeholder="seu@email.com"
                 />
               </div>
@@ -107,17 +115,19 @@ const Login: React.FC = () => {
                 <input
                   type="password" value={password} onChange={e => setPassword(e.target.value)} required
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                  style={{ background: '#1a1a25', border: '1px solid #1e1e2e', color: '#fafafa' }}
-                  onFocus={e => (e.target.style.borderColor = '#31A8FF55')}
-                  onBlur={e => (e.target.style.borderColor = '#1e1e2e')}
+                  style={{ background: '#13131e', border: '1px solid #252540', color: '#fafafa' }}
+                  onFocus={e => { e.target.style.borderColor = '#31A8FF55'; e.target.style.boxShadow = '0 0 0 3px rgba(49,168,255,0.07)'; }}
+                  onBlur={e => { e.target.style.borderColor = '#1e1e2e'; e.target.style.boxShadow = ''; }}
                   placeholder="••••••••"
                 />
               </div>
 
               <button
                 type="submit" disabled={loading}
-                className="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all disabled:opacity-40 mt-2"
-                style={{ background: 'linear-gradient(135deg,#0f4c81,#1a6fb5)', color: '#fff', boxShadow: '0 0 24px hsla(205, 100%, 60%, 0.20)', border: '1px solid #31a8ff4d' }}
+                className="w-full py-3 rounded-xl font-bold text-sm tracking-wide disabled:opacity-40 mt-2"
+                style={{ background: 'linear-gradient(135deg,#0f4c81,#1a6fb5)', color: '#fff', boxShadow: '0 0 28px hsla(205, 100%, 60%, 0.25)', border: '1px solid #31a8ff4d' }}
+                onMouseEnter={e => { if (loading) return; (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 40px hsla(205,100%,60%,0.4), 0 10px 30px rgba(0,0,0,0.4)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = ''; (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 28px hsla(205, 100%, 60%, 0.25)'; }}
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
@@ -131,6 +141,7 @@ const Login: React.FC = () => {
             </p>
           </div>
         </div>
+        </div>{/* fecha gradient border wrapper */}
 
         <div className="flex flex-col items-center gap-1 mt-4">
           <div className="flex items-center gap-1.5" style={{ color: '#31A8FF', opacity: 0.4 }}>
