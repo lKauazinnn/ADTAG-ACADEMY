@@ -7,12 +7,12 @@ import { Module, Progress } from '../types';
 
 // Paleta das ferramentas Adobe — usada nos cards dos módulos
 const adobeTools = [
-  { abbr: 'Ps', name: 'Photoshop',    color: '#31A8FF', dark: '#0d5c91' },
-  { abbr: 'Pr', name: 'Premiere',     color: '#EA77FF', dark: '#7a3090' },
-  { abbr: 'Ai', name: 'Illustrator',  color: '#FF9A00', dark: '#8c5000' },
-  { abbr: 'Ae', name: 'After Effects',color: '#9999FF', dark: '#444499' },
-  { abbr: 'Lr', name: 'Lightroom',    color: '#31C5F4', dark: '#0b6e8c' },
-  { abbr: 'Id', name: 'InDesign',     color: '#FF3870', dark: '#8c1a3a' },
+  { abbr: 'Ps', name: 'Photoshop',    color: '#31A8FF', dark: '#0d5c91', topicos: ['Tratamento de imagem', 'Composição', 'Retoque', 'Exportação'] },
+  { abbr: 'Pr', name: 'Premiere',     color: '#EA77FF', dark: '#7a3090', topicos: ['Corte de vídeo', 'Transições', 'Color grading', 'Exportação'] },
+  { abbr: 'Ai', name: 'Illustrator',  color: '#FF9A00', dark: '#8c5000', topicos: ['Vetores', 'Tipografia', 'Logos', 'Ícones'] },
+  { abbr: 'Ae', name: 'After Effects',color: '#9999FF', dark: '#444499', topicos: ['Motion graphics', 'Animação', 'Efeitos visuais', 'Compositing'] },
+  { abbr: 'Lr', name: 'Lightroom',    color: '#31C5F4', dark: '#0b6e8c', topicos: ['Edição de fotos', 'Presets', 'Gerenciamento', 'Exportação'] },
+  { abbr: 'Id', name: 'InDesign',     color: '#FF3870', dark: '#8c1a3a', topicos: ['Diagramação', 'Editorial', 'Impressão', 'PDF profissional'] },
 ];
 
 const getToolForModule = (title: string, fallbackIndex: number) => {
@@ -42,6 +42,7 @@ const Dashboard: React.FC = () => {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [loading, setLoading] = useState(true);
   const [ringPct, setRingPct] = useState(0);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -254,8 +255,105 @@ const Dashboard: React.FC = () => {
             </span>
           </div>
           <span className="text-[11px] px-3 py-1 rounded-full font-medium" style={{ color: '#9494b8', background: 'rgba(18,18,26,0.7)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.07)' }}>
-            {modules.length} módulos
+            {modules.length} módulos disponíveis
           </span>
+        </div>
+
+        {/* ── Card Destaque ── */}
+        {modules.length > 0 && (() => {
+          const featIdx = modules.findIndex(m => {
+            const mp = progress?.modules.find(mp => mp.moduleId === m.id);
+            return mp && mp.progressPercentage > 0 && mp.progressPercentage < 100;
+          });
+          const feat = modules[featIdx >= 0 ? featIdx : 0];
+          const featTool = getToolForModule(feat.title, featIdx >= 0 ? featIdx : 0);
+          const featMp = progress?.modules.find(mp => mp.moduleId === feat.id);
+          const featPct = featMp?.progressPercentage ?? 0;
+          const totalSecs = feat.videos.reduce((acc: number, v: any) => acc + v.duration, 0);
+          const h = Math.floor(totalSecs / 3600);
+          const m = Math.floor((totalSecs % 3600) / 60);
+          const durLabel = h > 0 ? `${h}h ${m}min` : `${m}min`;
+          return (
+            <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.08s' }}>
+              <div
+                className="rounded-2xl overflow-hidden relative cursor-pointer"
+                style={{ background: 'rgba(14,14,22,0.9)', border: `1px solid ${featTool.color}33`, boxShadow: `0 8px 48px ${featTool.color}18`, transition: 'transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease' }}
+                onClick={() => navigate(`/module/${feat.id}`)}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 20px 60px ${featTool.color}28`; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 48px ${featTool.color}18`; }}
+              >
+                <div style={{ height: 3, background: `linear-gradient(90deg, ${featTool.color}, #9333ea, #EA77FF)` }} />
+                <span className="absolute right-4 bottom-0 text-[160px] font-black leading-none select-none pointer-events-none"
+                  style={{ color: featTool.color, opacity: 0.07, fontFamily: 'monospace', letterSpacing: '-0.04em' }}>
+                  {featTool.abbr}
+                </span>
+                <div className="p-7 relative z-10 flex flex-col md:flex-row gap-8">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: featTool.color }}>
+                        {featPct > 0 ? 'Continuar assistindo' : 'Módulo em Destaque'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: featTool.color + '22', border: `1px solid ${featTool.color}44` }}>
+                        <span className="text-sm font-black" style={{ color: featTool.color, fontFamily: 'monospace' }}>{featTool.abbr}</span>
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-black" style={{ color: '#fafafa', letterSpacing: '-0.02em' }}>{feat.title}</h2>
+                        <p className="text-[10px]" style={{ color: '#6b6b8a' }}>{featTool.name}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm mb-4 leading-relaxed" style={{ color: '#9494b8', maxWidth: 420 }}>{feat.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {featTool.topicos.map((t: string) => (
+                        <span key={t} className="text-[10px] font-semibold px-2.5 py-1 rounded-full" style={{ background: `${featTool.color}14`, color: featTool.color, border: `1px solid ${featTool.color}33` }}>
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    {featPct > 0 && (
+                      <div className="mb-5" style={{ maxWidth: 320 }}>
+                        <div className="flex justify-between mb-1.5">
+                          <span className="text-[10px] uppercase tracking-wider" style={{ color: '#9494b8' }}>Progresso</span>
+                          <span className="text-[10px] font-bold" style={{ color: featTool.color }}>{featPct}%</span>
+                        </div>
+                        <div className="w-full h-1.5 rounded-full" style={{ background: '#1a1a25' }}>
+                          <div className="h-1.5 rounded-full" style={{ width: `${featPct}%`, background: `linear-gradient(90deg, ${featTool.color}, ${featTool.dark})` }} />
+                        </div>
+                      </div>
+                    )}
+                    <button
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold"
+                      style={{ background: `linear-gradient(135deg, ${featTool.color}, ${featTool.dark})`, color: '#fff', boxShadow: `0 4px 20px ${featTool.color}44` }}
+                      onClick={e => { e.stopPropagation(); navigate(`/module/${feat.id}`); }}
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      {featPct > 0 ? 'Continuar' : 'Iniciar módulo'}
+                    </button>
+                  </div>
+                  <div className="flex md:flex-col gap-3 md:gap-4 md:justify-center">
+                    {[
+                      { icon: '🎬', val: feat.videos.length, label: 'Aulas' },
+                      { icon: '⏱', val: durLabel, label: 'Duração' },
+                      { icon: '⭐', val: '4.9', label: 'Avaliação' },
+                    ].map(s => (
+                      <div key={s.label} className="flex flex-col items-center justify-center p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', minWidth: 90 }}>
+                        <span className="text-base mb-0.5">{s.icon}</span>
+                        <span className="text-lg font-black" style={{ color: featTool.color, lineHeight: 1 }}>{s.val}</span>
+                        <span className="text-[9px] uppercase tracking-widest mt-0.5" style={{ color: '#6b6b8a' }}>{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Todos os módulos label */}
+        <div className="flex items-center gap-3 mb-4 animate-fade-in-up" style={{ animationDelay: '0.12s' }}>
+          <div className="w-0.5 h-5 rounded-full" style={{ background: 'linear-gradient(180deg, #31A8FF, #9333ea)' }} />
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: '#fafafa' }}>Todos os Módulos</span>
         </div>
 
         {/* Continue de onde parou */}
@@ -322,12 +420,14 @@ const Dashboard: React.FC = () => {
                 className="rounded-2xl overflow-hidden cursor-pointer group animate-fade-in-up card-shimmer"
                 style={{ background: 'rgba(14,14,22,0.75)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.07)', borderTop: `2px solid ${tool.color}55`, boxShadow: '0 4px 24px rgba(0,0,0,0.5)', animationDelay: `${index * 0.12}s`, transition: 'transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s cubic-bezier(0.22,1,0.36,1), border-color 0.45s ease' }}
                 onMouseEnter={e => {
+                  setHoveredCard(module.id);
                   (e.currentTarget as HTMLDivElement).style.borderColor = tool.color + '44';
                   (e.currentTarget as HTMLDivElement).style.borderTopColor = tool.color;
                   (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
                   (e.currentTarget as HTMLDivElement).style.boxShadow = `0 20px 60px rgba(0,0,0,0.65), 0 0 40px ${tool.color}18`;
                 }}
                 onMouseLeave={e => {
+                  setHoveredCard(null);
                   (e.currentTarget as HTMLDivElement).style.borderColor = '#1e1e2e';
                   (e.currentTarget as HTMLDivElement).style.borderTopColor = tool.color + '55';
                   (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
@@ -336,8 +436,6 @@ const Dashboard: React.FC = () => {
               >
                 {/* Header do card */}
                 <div className="p-5 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${tool.dark}cc, rgba(5,5,9,0.5) 80%)`, borderBottom: `1px solid ${tool.color}22` }}>
-
-                  {/* Abreviação Adobe grande no fundo */}
                   <span
                     className="absolute right-2 bottom-0 text-[88px] font-black leading-none select-none"
                     style={{ color: tool.color, opacity: 0.13, fontFamily: 'monospace', letterSpacing: '-0.04em' }}
@@ -347,16 +445,22 @@ const Dashboard: React.FC = () => {
 
                   <div className="relative z-10 flex items-start justify-between">
                     <div className="flex-1 pr-4">
-                      {/* Badge de status */}
-                      <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-3 uppercase tracking-wider" style={statusStyle}>
+                      <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-2 uppercase tracking-wider" style={statusStyle}>
                         {statusLabel}
                       </span>
-                      <h3 className="font-bold text-sm leading-snug" style={{ color: '#fafafa' }}>
+                      <h3 className="font-bold text-sm leading-snug mb-2.5" style={{ color: '#fafafa' }}>
                         {module.title}
                       </h3>
+                      {/* Chips de tópicos */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {tool.topicos.slice(0, 2).map((t: string) => (
+                          <span key={t} className="text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: `${tool.color}14`, color: tool.color, border: `1px solid ${tool.color}22` }}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Badge da ferramenta */}
                     <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: tool.color + '1a', border: `1px solid ${tool.color}33` }}>
                         <span className="text-[11px] font-black" style={{ color: tool.color, fontFamily: 'monospace' }}>{tool.abbr}</span>
@@ -401,12 +505,18 @@ const Dashboard: React.FC = () => {
                       </span>
                     </div>
 
-                    <span className="text-[11px] font-bold flex items-center gap-1 px-3 py-1 rounded-full transition-all group-hover:gap-1.5"
-                      style={{ color: tool.color, background: tool.color + '18', border: `1px solid ${tool.color}33` }}>
-                      Ver módulo
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    <span
+                      className="text-[11px] font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
+                      style={{
+                        color: hoveredCard === module.id ? '#fff' : tool.color,
+                        background: hoveredCard === module.id ? tool.color : tool.color + '18',
+                        border: `1px solid ${tool.color}44`,
+                      }}
+                    >
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
                       </svg>
+                      {modPct > 0 ? 'Continuar' : 'Ver módulo'}
                     </span>
                   </div>
                 </div>
@@ -415,20 +525,48 @@ const Dashboard: React.FC = () => {
           })}
         </div>
 
-        {/* Footer */}
-        <footer className="mt-14 pb-4 text-center">
-          <div className="inline-flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2 mb-1">
-              {['Ps','Pr','Ai','Ae'].map((t, i) => (
-                <span key={t} className="text-[9px] font-black px-1.5 py-0.5 rounded"
-                  style={{ fontFamily: 'monospace', color: adobeTools[i].color, background: adobeTools[i].color + '12', border: `1px solid ${adobeTools[i].color}22` }}>
-                  {t}
-                </span>
-              ))}
+        {/* Banner CTA */}
+        <div className="mt-10 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="rounded-2xl p-7 relative overflow-hidden" style={{ background: 'rgba(14,14,22,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse 80% 100% at 100% 50%, rgba(49,168,255,0.1), transparent 70%), radial-gradient(ellipse 60% 100% at 0% 50%, rgba(147,51,234,0.1), transparent 70%)' }} />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-5">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#31A8FF' }}>ADTAG · Creative Studio</p>
+                <h3 className="text-lg font-black" style={{ color: '#fafafa', letterSpacing: '-0.02em' }}>
+                  Domine o Adobe Creative Suite completo
+                </h3>
+                <p className="text-xs mt-1" style={{ color: '#6b6b8a' }}>
+                  {modules.length} módulos · acesso completo à trilha de editor
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                {adobeTools.slice(0, 4).map(t => (
+                  <span key={t.abbr} className="text-[9px] font-black px-2 py-1 rounded-lg"
+                    style={{ fontFamily: 'monospace', color: t.color, background: t.color + '14', border: `1px solid ${t.color}28` }}>
+                    {t.abbr}
+                  </span>
+                ))}
+                <button
+                  className="ml-2 flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider"
+                  style={{ background: 'linear-gradient(135deg, #31A8FF, #9333ea)', color: '#fff', boxShadow: '0 4px 20px rgba(49,168,255,0.3)' }}
+                  onClick={() => modules[0] && navigate(`/module/${modules[0].id}`)}
+                >
+                  Começar agora
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-10 pb-4 text-center">
+          <div className="inline-flex flex-col items-center gap-2">
             <img src="/logo.png" alt="ADTAG" className="h-6 w-auto object-contain"
               style={{ filter: 'brightness(0) invert(1)', opacity: 0.5 }} />
-            <p className="text-[10px]" style={{ color: '#fafafa' }}>© 2026 · Creative Studio UNIDOS – Juventude ADTAG</p>
+            <p className="text-[10px]" style={{ color: '#6b6b8a' }}>© 2026 · Creative Studio UNIDOS – Juventude ADTAG</p>
           </div>
         </footer>
       </div>

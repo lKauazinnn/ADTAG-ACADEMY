@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flyer Generator · ADTAG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #06060e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 60px;
+      gap: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+    canvas {
+      border-radius: 20px;
+      box-shadow: 0 48px 140px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.07);
+      max-width: 540px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 13px 26px; border-radius: 13px; border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 800;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-dl {
+      background: linear-gradient(135deg, #31A8FF, #EA77FF);
+      color: #fff;
+      box-shadow: 0 8px 28px rgba(49,168,255,.38), 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .btn-re {
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.5);
+      border: 1px solid rgba(255,255,255,.1) !important;
+    }
+    .hint { font-size: 11px; color: rgba(255,255,255,.2); text-align: center; }
+  </style>
+</head>
+<body>
+
+<canvas id="c" width="1080" height="1350"></canvas>
+
+<div class="bar">
+  <button class="btn btn-dl" onclick="downloadPNG()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    Baixar PNG · 1080 × 1350
+  </button>
+  <button class="btn btn-re" onclick="draw()">↺ Redesenhar</button>
+</div>
+<p class="hint">Formato Instagram 4:5 — pronto para postar ou importar no Canva</p>
+
+<script>
+const W = 1080, H = 1350;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// ← TROQUE AQUI pela URL real do site
+const SITE_URL = 'https://seu-site.vercel.app';
+
+/* ── helpers ── */
+function rr(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function hex2rgb(hex) {
+  const v = parseInt(hex.replace('#',''), 16);
+  return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
+}
+function c(hex, a) {
+  const { r, g, b } = hex2rgb(hex);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function orb(x, y, radius, hex, alpha) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+  g.addColorStop(0, c(hex, alpha));
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+
+/* ── data ── */
+const tools = [
+  { abbr:'Ps', name:'Photoshop',     cat:'Edição · Composição',  color:'#31A8FF' },
+  { abbr:'Pr', name:'Premiere Pro',  cat:'Edição de Vídeo',       color:'#EA77FF' },
+  { abbr:'Ai', name:'Illustrator',   cat:'Vetores · Logos',       color:'#FF9A00' },
+  { abbr:'Ae', name:'After Effects', cat:'Motion · Animação',     color:'#9999FF' },
+  { abbr:'Lr', name:'Lightroom',     cat:'Fotografia · Presets',  color:'#31C5F4' },
+  { abbr:'Id', name:'InDesign',      cat:'Editorial · Layout',    color:'#FF3870' },
+];
+const smModules = [
+  { tag:'IG', name:'Instagram',  meta:'18 aulas · 4h 30min', color:'#E1306C' },
+  { tag:'TK', name:'TikTok',     meta:'14 aulas · 3h 20min', color:'#69C9D0' },
+  { tag:'YT', name:'YouTube',    meta:'20 aulas · 5h 10min', color:'#FF3333' },
+  { tag:'CP', name:'Copywriting',meta:'12 aulas · 2h 50min', color:'#FF9A00' },
+  { tag:'SM', name:'Estratégia', meta:'10 aulas · 2h 20min', color:'#9333ea' },
+  { tag:'MT', name:'Métricas',   meta:'8 aulas · 1h 50min',  color:'#31C5F4' },
+];
+
+/* ══════════════════════════════════════
+   DRAW
+══════════════════════════════════════ */
+function draw() {
+  const P = 68; // horizontal padding
+
+  /* ── 1. BG ── */
+  ctx.fillStyle = '#060610';
+  ctx.fillRect(0, 0, W, H);
+
+  orb(W * 0.9,  -80,  680, '#31A8FF', 0.28);
+  orb(-80, H * 0.72, 780, '#EA77FF', 0.22);
+  orb(W * 0.5, H * 0.42, 550, '#FF9A00', 0.09);
+  orb(W * 0.18, H * 0.28, 480, '#9999FF', 0.08);
+
+  // subtle grid
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.016)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 62) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x, H*0.48); ctx.stroke(); }
+  for (let y = 0; y <= H*0.48; y += 62) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.restore();
+
+  /* ── 2. RAINBOW TOP BAR ── */
+  const topG = ctx.createLinearGradient(0,0,W,0);
+  topG.addColorStop(0,   '#31A8FF');
+  topG.addColorStop(0.2, '#EA77FF');
+  topG.addColorStop(0.42,'#FF9A00');
+  topG.addColorStop(0.58,'#9999FF');
+  topG.addColorStop(0.75,'#31C5F4');
+  topG.addColorStop(0.9, '#FF3870');
+  topG.addColorStop(1,   '#31A8FF');
+  ctx.fillStyle = topG;
+  ctx.fillRect(0, 0, W, 5);
+
+  /* ── 3. BRAND PILL ── */
+  const pillW = 344, pillH = 38, pillX = (W - pillW) / 2, pillY = 46;
+  rr(pillX, pillY, pillW, pillH, 19);
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1; ctx.stroke();
+
+  // green live dot
+  ctx.save();
+  ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(pillX + 22, pillY + pillH/2, 5, 0, Math.PI*2);
+  ctx.fillStyle = '#4ade80'; ctx.fill();
+  ctx.restore();
+
+  ctx.font = '600 13px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'center';
+  ctx.fillText('Creative Studio  ·  ADTAG', W/2 + 10, pillY + 24);
+
+  /* ── 4. HEADLINE ── */
+  const FS = 102;
+  ctx.textAlign = 'center';
+
+  // "Aprenda" – white
+  ctx.font = `900 ${FS}px Inter`;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('Aprenda', W/2, 248);
+
+  // "Design &" – gradient
+  const hg = ctx.createLinearGradient(P, 0, W-P, 0);
+  hg.addColorStop(0, '#31A8FF');
+  hg.addColorStop(0.42, '#EA77FF');
+  hg.addColorStop(1, '#FF9A00');
+  ctx.font = `900 ${FS}px Inter`;
+  ctx.fillStyle = hg;
+  ctx.fillText('Design &', W/2, 355);
+
+  // "Criação." – gradient
+  ctx.fillStyle = hg;
+  ctx.fillText('Criação.', W/2, 460);
+
+  // subtitle
+  ctx.font = '400 21px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.36)';
+  ctx.fillText('Creative Adtag   ·  Do zero ao avançado', W/2, 514);
+
+  /* ── 5. STATS BAR ── */
+  const stats = [
+    { val:'6',    lbl:'Trilhas',  col:'#31A8FF' },
+    { val:'100+', lbl:'Aulas',    col:'#EA77FF' },
+    { val:'∞',    lbl:'Acesso',   col:'#FF9A00' },
+    { val:'Free', lbl:'Membros',  col:'#4ade80' },
+  ];
+  const statBarH = 64, statBarY = 556;
+  const statW = (W - P*2 - 3*12) / 4;
+  stats.forEach((s, i) => {
+    const sx = P + i * (statW + 12);
+    rr(sx, statBarY, statW, statBarH, 15);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1; ctx.stroke();
+
+    ctx.font = '900 30px Inter';
+    ctx.fillStyle = s.col;
+    ctx.textAlign = 'center';
+    ctx.fillText(s.val, sx + statW/2, statBarY + 36);
+
+    ctx.font = '700 9px Inter';
+    ctx.fillStyle = 'rgba(255,255,255,0.26)';
+    ctx.fillText(s.lbl.toUpperCase(), sx + statW/2, statBarY + 54);
+  });
+
+  /* ── 6. SECTION LABEL ── */
+  const secY = 655;
+  // accent line
+  rr(P, secY - 1, 26, 3, 2);
+  ctx.fillStyle = '#31A8FF'; ctx.fill();
+
+  ctx.font = '700 11px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.textAlign = 'left';
+  ctx.fillText('TRILHAS DISPONÍVEIS AGORA', P + 36, secY + 5);
+
+  // right badge
+  ctx.font = '600 10px Inter';
+  const bText = 'Adobe Creative Suite';
+  const secBadgeW = ctx.measureText(bText).width + 24;
+  rr(W - P - secBadgeW, secY - 12, secBadgeW, 22, 11);
+  ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.textAlign = 'right';
+  ctx.fillText(bText, W - P - secBadgeW/2, secY + 4);
+
+  /* ── 7. TOOL CARDS 3×2 ── */
+  const COLS = 3, CGAP = 12, RGAP = 12;
+  const cardW = (W - P*2 - CGAP*(COLS-1)) / COLS;  // ~309
+  const cardH = 97;
+  const gridY = 682;
+
+  tools.forEach((t, i) => {
+    const col = i % 3, row = Math.floor(i / 3);
+    const cx = P + col * (cardW + CGAP);
+    const cy = gridY + row * (cardH + RGAP);
+
+    // card bg
+    rr(cx, cy, cardW, cardH, 16);
+    ctx.fillStyle = 'rgba(18,18,30,0.88)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1; ctx.stroke();
+
+    // top accent
+    rr(cx, cy, cardW, 2.5, 1.5);
+    const ag = ctx.createLinearGradient(cx, 0, cx + cardW, 0);
+    ag.addColorStop(0, t.color);
+    ag.addColorStop(1, c(t.color, 0.2));
+    ctx.fillStyle = ag; ctx.fill();
+
+    // icon bg
+    const ix = cx + 17, iy = cy + 15, is = 52;
+    rr(ix, iy, is, is, 13);
+    ctx.fillStyle = c(t.color, 0.13); ctx.fill();
+    ctx.strokeStyle = c(t.color, 0.28); ctx.stroke();
+
+    // abbr text
+    ctx.font = '900 18px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = t.color;
+    ctx.fillText(t.abbr, ix + is/2, iy + is/2 + 7);
+
+    // name
+    ctx.font = '700 15px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fafafa';
+    ctx.fillText(t.name, cx + 82, cy + 38);
+
+    // category
+    ctx.font = '500 11px Inter';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText(t.cat, cx + 82, cy + 56);
+
+    // status dot + text
+    ctx.save();
+    ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.arc(cx + 82, cy + 79, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#4ade80'; ctx.fill();
+    ctx.restore();
+    ctx.font = '600 10px Inter';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText('Disponível', cx + 92, cy + 83);
+  });
+
+  /* ── 8. SOCIAL MEDIA BANNER ── */
+  const smBY = gridY + 2*(cardH + RGAP) + 28;
+  const smBH = 202;
+  const smBX = P, smBW = W - P*2;
+
+  // outer card
+  rr(smBX, smBY, smBW, smBH, 22);
+  ctx.fillStyle = '#080514'; ctx.fill();
+  ctx.strokeStyle = 'rgba(225,48,108,0.28)'; ctx.lineWidth = 1; ctx.stroke();
+
+  // internal aurora (clipped)
+  ctx.save();
+  rr(smBX, smBY, smBW, smBH, 22); ctx.clip();
+  const smO1 = ctx.createRadialGradient(smBX+200, smBY+smBH/2, 0, smBX+200, smBY+smBH/2, 300);
+  smO1.addColorStop(0, 'rgba(225,48,108,0.22)'); smO1.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = smO1; ctx.fillRect(smBX, smBY, smBW, smBH);
+  const smO2 = ctx.createRadialGradient(smBX+smBW-180, smBY+smBH/2, 0, smBX+smBW-180, smBY+smBH/2, 260);
+  smO2.addColorStop(0, 'rgba(147,51,234,0.16)'); smO2.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = smO2; ctx.fillRect(smBX, smBY, smBW, smBH);
+  // subtle inner grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.018)'; ctx.lineWidth = 1;
+  for (let x = smBX; x <= smBX+smBW; x += 48) {
+    ctx.beginPath(); ctx.moveTo(x, smBY); ctx.lineTo(x, smBY+smBH); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── LAYOUT: esquerda 60% | direita 40% ──
+  const divX = smBX + Math.round(smBW * 0.60);
+  const smTX = smBX + 36;
+
+  // divisor vertical sutil
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillRect(divX, smBY + 22, 1, smBH - 44);
+
+  // ── COLUNA ESQUERDA ──
+  // eyebrow
+  ctx.save();
+  ctx.shadowColor = '#E1306C'; ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(smTX, smBY + 34, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#E1306C'; ctx.fill();
+  ctx.restore();
+  ctx.font = '700 11px Inter';
+  ctx.fillStyle = '#E1306C';
+  ctx.textAlign = 'left';
+  ctx.fillText('NOVIDADE CHEGANDO · ADTAG', smTX + 14, smBY + 38);
+
+  // title
+  ctx.font = '900 40px Inter';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('Trilha Social Media', smTX, smBY + 88);
+
+  // subtitle
+  ctx.font = '400 12.5px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillText('Instagram · TikTok · YouTube · Copy · Estratégia · Analytics', smTX, smBY + 112);
+
+  // module chips (6 tags coloridas)
+  let chipX = smTX;
+  smModules.forEach(m => {
+    ctx.font = '900 10px Inter';
+    const tw = ctx.measureText(m.tag).width + 18;
+    rr(chipX, smBY + 130, tw, 22, 6);
+    ctx.fillStyle = c(m.color, 0.13); ctx.fill();
+    ctx.strokeStyle = c(m.color, 0.28); ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = m.color;
+    ctx.fillText(m.tag, chipX + tw/2, smBY + 145);
+    chipX += tw + 6;
+  });
+
+  // ── COLUNA DIREITA ──
+  const rcx = divX + (smBX + smBW - divX) / 2; // centro da coluna direita
+
+  // EM BREVE pill
+  const csW = 148, csH = 28;
+  rr(rcx - csW/2, smBY + 26, csW, csH, 14);
+  ctx.fillStyle = 'rgba(234,119,255,0.08)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(234,119,255,0.3)'; ctx.stroke();
+  ctx.font = '700 11px Inter';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#EA77FF';
+  ctx.fillText('● EM BREVE', rcx, smBY + 44);
+
+  // Separador horizontal
+  const sepLX = divX + 20, sepRX = smBX + smBW - 20;
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.fillRect(sepLX, smBY + 68, sepRX - sepLX, 1);
+
+  // Stats trio (82 aulas | 6 módulos | 20h+)
+  const stDefs = [
+    { val:'82',  lbl:'AULAS',   col:'#EA77FF' },
+    { val:'6',   lbl:'MÓD.',    col:'#E1306C' },
+    { val:'20h', lbl:'CONTEÚDO', col:'#FF9A00' },
+  ];
+  const rcW = smBX + smBW - divX;
+  stDefs.forEach((s, i) => {
+    const sx = divX + (i + 0.5) * (rcW / 3);
+    ctx.font = '900 28px Inter';
+    ctx.fillStyle = s.col;
+    ctx.textAlign = 'center';
+    ctx.fillText(s.val, sx, smBY + 116);
+    ctx.font = '700 9px Inter';
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.fillText(s.lbl, sx, smBY + 132);
+  });
+
+  // Linha separadora inferior das stats
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  ctx.fillRect(sepLX, smBY + 142, sepRX - sepLX, 1);
+
+  // Texto URL clicável
+  ctx.font = '600 11px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.textAlign = 'center';
+  ctx.fillText(SITE_URL.replace('https://', ''), rcx, smBY + 168);
+
+  /* ── 9. CTA BOX ── */
+  const ctaY = smBY + smBH + 24;
+  const ctaH = 82;
+  rr(P, ctaY, W - P*2, ctaH, 18);
+  const ctaBg = ctx.createLinearGradient(P, ctaY, W-P, ctaY+ctaH);
+  ctaBg.addColorStop(0,   'rgba(49,168,255,0.12)');
+  ctaBg.addColorStop(0.5, 'rgba(234,119,255,0.08)');
+  ctaBg.addColorStop(1,   'rgba(255,154,0,0.07)');
+  ctx.fillStyle = ctaBg; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.stroke();
+
+  // top shimmer line
+  const ctaLineG = ctx.createLinearGradient(P, ctaY, W-P, ctaY);
+  ctaLineG.addColorStop(0, 'rgba(0,0,0,0)');
+  ctaLineG.addColorStop(0.3, 'rgba(49,168,255,0.55)');
+  ctaLineG.addColorStop(0.7, 'rgba(234,119,255,0.55)');
+  ctaLineG.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = ctaLineG;
+  ctx.fillRect(P, ctaY, W-P*2, 1);
+
+  ctx.font = '800 22px Inter';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText('Acesse agora — é de graça', P + 32, ctaY + 35);
+
+  ctx.font = '400 13px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.fillText('Plataforma exclusiva para membros do Creative Studio UNIDOS', P + 32, ctaY + 58);
+
+  // QR Code (escaneável na imagem exportada)
+  const qrSize = 66, qrPad = 6;
+  const qrBW = qrSize + qrPad * 2, qrBH = qrSize + qrPad * 2 + 18;
+  const qrBX = W - P - qrBW - 4;
+  const qrBY = ctaY + (ctaH - qrBH) / 2;
+
+  // fundo branco (necessário para leitura do QR)
+  rr(qrBX, qrBY, qrBW, qrBH, 10);
+  ctx.fillStyle = '#ffffff'; ctx.fill();
+
+  // desenha QR gerado
+  if (window._qrImg) {
+    ctx.drawImage(window._qrImg, qrBX + qrPad, qrBY + qrPad, qrSize, qrSize);
+  }
+
+  // label "ESCANEIE"
+  ctx.font = '700 9px Inter';
+  ctx.fillStyle = '#060610';
+  ctx.textAlign = 'center';
+  ctx.fillText('ESCANEIE', qrBX + qrBW / 2, qrBY + qrPad + qrSize + 12);
+
+  // guarda área clicável (HTML)
+  window._ctaBtn = { x: qrBX, y: qrBY, w: qrBW, h: qrBH };
+
+  /* ── 10. FOOTER ── */
+  const ftY = ctaY + ctaH + 34;
+
+  // separator
+  const ftSepG = ctx.createLinearGradient(P, ftY, W-P, ftY);
+  ftSepG.addColorStop(0,'rgba(0,0,0,0)');
+  ftSepG.addColorStop(0.5,'rgba(255,255,255,0.08)');
+  ftSepG.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = ftSepG;
+  ctx.fillRect(P, ftY, W-P*2, 1);
+
+  // brand
+  ctx.font = '900 15px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.textAlign = 'center';
+  ctx.fillText('ADTAG · CREATIVE STUDIO', W/2, ftY + 44);
+
+  ctx.font = '400 12px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.16)';
+  ctx.fillText('© 2026 · Creative Studio UNIDOS – Juventude ADTAG', W/2, ftY + 66);
+
+  ctx.font = '400 10px Inter';
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.fillText('v1.0 · Desenvolvido por Kauã-R12', W/2, ftY + 84);
+
+  // tool mini-tags row
+  const tagsY = ftY + 102;
+  const allTags = [
+    { t:'Ps', col:'#31A8FF' }, { t:'Pr', col:'#EA77FF' }, { t:'Ai', col:'#FF9A00' },
+    { t:'Ae', col:'#9999FF' }, { t:'Lr', col:'#31C5F4' }, { t:'Id', col:'#FF3870' },
+    { t:'IG', col:'#E1306C' }, { t:'TK', col:'#69C9D0' }, { t:'YT', col:'#FF3333' },
+  ];
+  ctx.font = '900 10px Inter';
+  const totalTagW = allTags.reduce((a, tag) => a + ctx.measureText(tag.t).width + 22, 0) + 8*8;
+  let tagX = (W - totalTagW) / 2;
+  allTags.forEach((tag, i) => {
+    if (i === 6) tagX += 10; // separator before SM tags
+    const tw = ctx.measureText(tag.t).width + 20;
+    rr(tagX, tagsY, tw, 22, 6);
+    ctx.fillStyle = c(tag.col, 0.12); ctx.fill();
+    ctx.strokeStyle = c(tag.col, 0.22); ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = tag.col;
+    ctx.fillText(tag.t, tagX + tw/2, tagsY + 15);
+    tagX += tw + 8;
+  });
+}
+
+/* ── download ── */
+function downloadPNG() {
+  draw();
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'flyer-adtag-1080x1350.png';
+    a.click();
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+
+/* ── clique no botão CTA ── */
+canvas.style.cursor = 'default';
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top)  * scaleY;
+  const b = window._ctaBtn;
+  if (b && mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) {
+    canvas.style.cursor = 'pointer';
+  } else {
+    canvas.style.cursor = 'default';
+  }
+});
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top)  * scaleY;
+  const b = window._ctaBtn;
+  if (b && mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) {
+    window.open(SITE_URL, '_blank');
+  }
+});
+
+/* ── gera QR Code e inicializa ── */
+async function generateQR() {
+  return new Promise((resolve, reject) => {
+    const qrCanvas = document.createElement('canvas');
+    QRCode.toCanvas(qrCanvas, SITE_URL, {
+      width: 200,
+      margin: 1,
+      color: { dark: '#000000', light: '#ffffff' }
+    }, err => {
+      if (err) return reject(err);
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = qrCanvas.toDataURL();
+    });
+  });
+}
+
+async function init() {
+  await document.fonts.ready;
+  try {
+    window._qrImg = await generateQR();
+  } catch(e) {
+    console.warn('QR falhou:', e);
+  }
+  draw();
+}
+
+init();
+</script>
+</body>
+</html>
