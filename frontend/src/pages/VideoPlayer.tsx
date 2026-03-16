@@ -3,6 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import api from '../services/api';
 
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 interface VideoData {
   id: string;
   title: string;
@@ -26,31 +33,78 @@ const VideoPlayer: React.FC = () => {
   const navigate = useNavigate();
   const progressInterval = useRef<ReturnType<typeof setInterval>>();
   const currentTime = useRef(0);
+  const playerRef = useRef<any>(null);
+  const playerDivRef = useRef<HTMLDivElement>(null);
+  const videoEndedRef = useRef(false);
 
   useEffect(() => {
     loadVideo();
-    return () => { if (progressInterval.current) clearInterval(progressInterval.current); };
+    return () => {
+      if (progressInterval.current) clearInterval(progressInterval.current);
+      if (playerRef.current?.destroy) { playerRef.current.destroy(); playerRef.current = null; }
+    };
   }, [id]);
 
-  // Escuta mensagens do YouTube (postMessage) para detectar fim do vídeo
+  // Inicializa YouTube IFrame API quando o vídeo carregar
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://www.youtube.com') return;
-      try {
-        const data = JSON.parse(event.data as string);
-        if (data.event === 'onStateChange') {
-          if (data.info === 1) handlePlay();       // playing
-          else if (data.info === 2) handlePause(); // paused
-          else if (data.info === 0) {              // ended
-            handlePause();
-            setVideoEnded(true);
-          }
-        }
-      } catch { /* ignora mensagens não-JSON */ }
+    if (!video) return;
+    const videoId = video.url.match(/embed\/([^?&]+)/)?.[1];
+    if (!videoId) return;
+
+    videoEndedRef.current = false;
+    setVideoEnded(false);
+
+    const initPlayer = () => {
+      if (!playerDivRef.current) return;
+      if (playerRef.current?.destroy) { playerRef.current.destroy(); playerRef.current = null; }
+
+      playerRef.current = new window.YT.Player(playerDivRef.current, {
+        videoId,
+        width: '100%',
+        height: '100%',
+        playerVars: { rel: 0, modestbranding: 1 },
+        events: {
+          onStateChange: (event: any) => {
+            const YT = window.YT.PlayerState;
+            if (event.data === YT.PLAYING) {
+              startProgress();
+            } else if (event.data === YT.PAUSED) {
+              stopProgress();
+            } else if (event.data === YT.ENDED) {
+              stopProgress();
+              videoEndedRef.current = true;
+              setVideoEnded(true);
+            }
+          },
+        },
+      });
     };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
+
+    if (window.YT && window.YT.Player) {
+      initPlayer();
+    } else {
+      if (!document.getElementById('yt-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'yt-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+      }
+      window.onYouTubeIframeAPIReady = initPlayer;
+    }
+  }, [video?.url]);
+
+  const startProgress = () => {
+    if (progressInterval.current) return;
+    progressInterval.current = setInterval(() => {
+      currentTime.current += 5;
+      updateProgress(currentTime.current);
+    }, 5000);
+  };
+
+  const stopProgress = () => {
+    if (progressInterval.current) { clearInterval(progressInterval.current); progressInterval.current = undefined; }
+    updateProgress(currentTime.current);
+  };
 
   const loadVideo = async () => {
     try {
@@ -82,19 +136,6 @@ const VideoPlayer: React.FC = () => {
     }
   };
 
-  const handlePlay = () => {
-    if (progressInterval.current) return; // já rodando
-    progressInterval.current = setInterval(() => {
-      currentTime.current += 5;
-      updateProgress(currentTime.current);
-    }, 5000);
-  };
-
-  const handlePause = () => {
-    if (progressInterval.current) { clearInterval(progressInterval.current); progressInterval.current = undefined; }
-    updateProgress(currentTime.current);
-  };
-
   const updateProgress = async (watchedTime: number) => {
     try { await api.post(`/videos/${id}/progress`, { watchedTime }); } catch { /* silencioso */ }
   };
@@ -114,11 +155,6 @@ const VideoPlayer: React.FC = () => {
   };
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
-
-  // URL com enablejsapi=1 para receber eventos do YouTube via postMessage
-  const playerUrl = video
-    ? (video.url.includes('?') ? `${video.url}&enablejsapi=1` : `${video.url}?enablejsapi=1`)
-    : '';
 
   const canComplete = videoEnded || completed;
 
@@ -171,14 +207,8 @@ const VideoPlayer: React.FC = () => {
           <div className="lg:col-span-2 space-y-4">
 
             {/* Player */}
-            <div className="rounded-2xl overflow-hidden border" style={{ background: '#000', borderColor: '#1e1e2e', boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}>
-              <iframe
-                src={playerUrl}
-                title={video.title}
-                className="w-full aspect-video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            <div className="rounded-2xl overflow-hidden border" style={{ background: '#000', borderColor: '#1e1e2e', boxShadow: '0 8px 40px rgba(0,0,0,0.7)', aspectRatio: '16/9' }}>
+              <div ref={playerDivRef} style={{ width: '100%', height: '100%' }} />
             </div>
 
             {/* Info */}
@@ -214,19 +244,17 @@ const VideoPlayer: React.FC = () => {
                 </div>
 
                 {!completed ? (
-                  <div className="space-y-2">
-                    <button
-                      onClick={handleComplete}
-                      disabled={!canComplete}
-                      className="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all"
-                      style={canComplete
-                        ? { background: 'linear-gradient(135deg,#9333ea,#6d28d9)', color: '#fff', boxShadow: '0 0 24px rgba(147,51,234,0.25)', cursor: 'pointer' }
-                        : { background: 'rgba(147,51,234,0.08)', color: '#9333ea55', border: '1px solid rgba(147,51,234,0.15)', cursor: 'not-allowed' }
-                      }
-                    >
-                      {canComplete ? 'Marcar como Concluída' : '⏳ Assista o vídeo até o fim para concluir'}
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleComplete}
+                    disabled={!canComplete}
+                    className="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all"
+                    style={canComplete
+                      ? { background: 'linear-gradient(135deg,#9333ea,#6d28d9)', color: '#fff', boxShadow: '0 0 24px rgba(147,51,234,0.25)', cursor: 'pointer' }
+                      : { background: 'rgba(147,51,234,0.08)', color: '#6b6b8a', border: '1px solid rgba(147,51,234,0.15)', cursor: 'not-allowed' }
+                    }
+                  >
+                    {canComplete ? 'Marcar como Concluída' : '⏳ Assista o vídeo até o fim para concluir'}
+                  </button>
                 ) : (
                   <div className="py-3 rounded-xl text-sm font-bold text-center tracking-wide"
                     style={{ background: 'rgba(49,168,255,0.08)', color: '#31A8FF', border: '1px solid rgba(49,168,255,0.2)' }}>
@@ -240,7 +268,6 @@ const VideoPlayer: React.FC = () => {
           {/* Sidebar */}
           <div>
             <div className="rounded-2xl p-5 sticky top-4" style={{ background: '#12121a', border: '1px solid #252538', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}>
-              {/* Módulo */}
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#31A8FF' }}>Módulo atual</p>
               <h3 className="text-sm font-black mb-1" style={{ color: '#fafafa' }}>{video.module.title}</h3>
               <p className="text-xs mb-5" style={{ color: '#9494b8' }}>Aula {video.order}</p>
@@ -249,21 +276,9 @@ const VideoPlayer: React.FC = () => {
               {(() => {
                 const cat = sessionStorage.getItem('currentCategory') || 'editor';
                 const toolsMap: Record<string, { abbr: string; color: string }[]> = {
-                  editor: [
-                    { abbr: 'Ps', color: '#31A8FF' },
-                    { abbr: 'Pr', color: '#EA77FF' },
-                    { abbr: 'Ai', color: '#FF9A00' },
-                  ],
-                  social: [
-                    { abbr: 'IG', color: '#E1306C' },
-                    { abbr: 'TK', color: '#69C9D0' },
-                    { abbr: 'YT', color: '#FF3333' },
-                  ],
-                  musicos: [
-                    { abbr: 'DAW', color: '#FF9A00' },
-                    { abbr: 'MIX', color: '#9333ea' },
-                    { abbr: 'DST', color: '#1DB954' },
-                  ],
+                  editor:  [{ abbr: 'Ps', color: '#31A8FF' }, { abbr: 'Pr', color: '#EA77FF' }, { abbr: 'Ai', color: '#FF9A00' }],
+                  social:  [{ abbr: 'IG', color: '#E1306C' }, { abbr: 'TK', color: '#69C9D0' }, { abbr: 'YT', color: '#FF3333' }],
+                  musicos: [{ abbr: 'DAW', color: '#FF9A00' }, { abbr: 'MIX', color: '#9333ea' }, { abbr: 'DST', color: '#1DB954' }],
                 };
                 const tools = toolsMap[cat];
                 if (!tools) return null;
