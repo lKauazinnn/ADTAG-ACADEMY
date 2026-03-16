@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 
 const smModules = [
@@ -78,7 +77,6 @@ const smModules = [
 ];
 
 const SocialMedia: React.FC = () => {
-  const navigate = useNavigate();
   const totalAulas = smModules.reduce((acc, m) => acc + m.aulas, 0);
   const featuredMod = smModules[0];
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
