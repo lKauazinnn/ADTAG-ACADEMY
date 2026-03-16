@@ -195,24 +195,42 @@ const VideoPlayer: React.FC = () => {
               <h3 className="text-sm font-black mb-1" style={{ color: '#fafafa' }}>{video.module.title}</h3>
               <p className="text-xs mb-5" style={{ color: '#9494b8' }}>Aula {video.order}</p>
 
-              {/* Ferramentas abordadas — apenas trilha Editor */}
-              {sessionStorage.getItem('currentCategory') === 'editor' && (
-                <div className="mb-5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#9494b8' }}>Ferramentas</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { abbr: 'Ps', color: '#31A8FF' },
-                      { abbr: 'Pr', color: '#EA77FF' },
-                      { abbr: 'Ai', color: '#FF9A00' },
-                    ].map(t => (
-                      <span key={t.abbr} className="text-[10px] font-black px-2 py-0.5 rounded"
-                        style={{ fontFamily: 'monospace', color: t.color, background: t.color + '14', border: `1px solid ${t.color}33` }}>
-                        {t.abbr}
-                      </span>
-                    ))}
+              {/* Ferramentas por trilha */}
+              {(() => {
+                const cat = sessionStorage.getItem('currentCategory') || 'editor';
+                const toolsMap: Record<string, { abbr: string; color: string }[]> = {
+                  editor: [
+                    { abbr: 'Ps', color: '#31A8FF' },
+                    { abbr: 'Pr', color: '#EA77FF' },
+                    { abbr: 'Ai', color: '#FF9A00' },
+                  ],
+                  social: [
+                    { abbr: 'IG', color: '#E1306C' },
+                    { abbr: 'TK', color: '#69C9D0' },
+                    { abbr: 'YT', color: '#FF3333' },
+                  ],
+                  musicos: [
+                    { abbr: 'DAW', color: '#FF9A00' },
+                    { abbr: 'MIX', color: '#9333ea' },
+                    { abbr: 'DST', color: '#1DB954' },
+                  ],
+                };
+                const tools = toolsMap[cat];
+                if (!tools) return null;
+                return (
+                  <div className="mb-5">
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#9494b8' }}>Ferramentas</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {tools.map(t => (
+                        <span key={t.abbr} className="text-[10px] font-black px-2 py-0.5 rounded"
+                          style={{ fontFamily: 'monospace', color: t.color, background: t.color + '14', border: `1px solid ${t.color}33` }}>
+                          {t.abbr}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Dica */}
               <div className="rounded-xl p-4" style={{ background: '#1a1a25', border: '1px solid rgba(147,51,234,0.15)' }}>
