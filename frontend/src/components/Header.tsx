@@ -7,11 +7,11 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isEditorRoute = location.pathname === '/dashboard' ||
-    location.pathname.startsWith('/module') ||
-    location.pathname.startsWith('/video');
-  const isSocialRoute = location.pathname === '/social-media';
-  const isMusicosRoute = location.pathname === '/musicos';
+  const inSubRoute = location.pathname.startsWith('/module') || location.pathname.startsWith('/video');
+  const storedCategory = sessionStorage.getItem('currentCategory') || 'editor';
+  const isEditorRoute = location.pathname === '/dashboard' || (inSubRoute && storedCategory === 'editor');
+  const isSocialRoute = location.pathname === '/social-media' || (inSubRoute && storedCategory === 'social');
+  const isMusicosRoute = location.pathname === '/musicos' || (inSubRoute && storedCategory === 'musicos');
 
   const handleLogout = () => {
     logout();

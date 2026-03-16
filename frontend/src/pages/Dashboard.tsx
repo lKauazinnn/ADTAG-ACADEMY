@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { sessionStorage.setItem('currentCategory', 'editor'); loadData(); }, []);
   useEffect(() => {
     if (progress) {
       const t = setTimeout(() => setRingPct(progress.overallProgress ?? 0), 400);

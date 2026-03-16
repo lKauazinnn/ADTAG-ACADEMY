@@ -28,6 +28,7 @@ const SocialMedia: React.FC = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   useEffect(() => {
+    sessionStorage.setItem('currentCategory', 'social');
     api.get('/modules?category=social').then(r => setModules(r.data)).catch(console.error).finally(() => setLoading(false));
   }, []);
 

@@ -28,6 +28,7 @@ const Musicos: React.FC = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   useEffect(() => {
+    sessionStorage.setItem('currentCategory', 'musicos');
     api.get('/modules?category=musicos').then(r => setModules(r.data)).catch(console.error).finally(() => setLoading(false));
   }, []);
 
