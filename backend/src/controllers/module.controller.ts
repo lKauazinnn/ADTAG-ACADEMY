@@ -10,9 +10,9 @@ export class ModuleController {
         .from('modules')
         .select('*, videos(id, title, description, duration, "order")');
 
-      if (category === 'editor')  query = query.lt('order', 10);
-      if (category === 'social')  query = query.gte('order', 10).lt('order', 20);
-      if (category === 'musicos') query = query.gte('order', 20).lt('order', 30);
+      if (category === 'editor')  query = query.lt('"order"', 10);
+      if (category === 'social')  query = query.gte('"order"', 10).lt('"order"', 20);
+      if (category === 'musicos') query = query.gte('"order"', 20).lt('"order"', 30);
 
       const { data: modules, error } = await query.order('order', { ascending: true });
       if (error) { console.error(error); return res.status(500).json({ error: 'Erro ao listar módulos' }); }
