@@ -8,6 +8,7 @@ import ModuleDetail from './pages/ModuleDetail';
 import VideoPlayer from './pages/VideoPlayer';
 import AdminDashboard from './pages/AdminDashboard';
 import SocialMedia from './pages/SocialMedia';
+import Musicos from './pages/Musicos';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -110,6 +111,14 @@ function App() {
             element={
               <PrivateRoute>
                 <SocialMedia />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/musicos"
+            element={
+              <PrivateRoute>
+                <Musicos />
               </PrivateRoute>
             }
           />

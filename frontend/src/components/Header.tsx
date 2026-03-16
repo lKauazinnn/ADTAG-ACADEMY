@@ -11,6 +11,7 @@ const Header: React.FC = () => {
     location.pathname.startsWith('/module') ||
     location.pathname.startsWith('/video');
   const isSocialRoute = location.pathname === '/social-media';
+  const isMusicosRoute = location.pathname === '/musicos';
 
   const handleLogout = () => {
     logout();
@@ -66,6 +67,19 @@ const Header: React.FC = () => {
               onMouseLeave={e => { if (isSocialRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
             >
               Social Media
+            </button>
+            <button
+              onClick={() => navigate('/musicos')}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg uppercase tracking-wider"
+              style={{
+                background: isMusicosRoute ? 'rgba(255,154,0,0.08)' : 'transparent',
+                color: isMusicosRoute ? '#FF9A00' : '#6b6b8a',
+                border: isMusicosRoute ? '1px solid rgba(255,154,0,0.2)' : '1px solid transparent',
+              }}
+              onMouseEnter={e => { if (isMusicosRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#FF9A00'; (e.currentTarget as HTMLButtonElement).style.background = '#FF9A0018'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#FF9A0033'; }}
+              onMouseLeave={e => { if (isMusicosRoute) return; (e.currentTarget as HTMLButtonElement).style.color = '#6b6b8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent'; }}
+            >
+              Músicos
             </button>
           </nav>
 
