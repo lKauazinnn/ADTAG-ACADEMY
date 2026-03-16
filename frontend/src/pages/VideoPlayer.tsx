@@ -34,8 +34,7 @@ const VideoPlayer: React.FC = () => {
   const progressInterval = useRef<ReturnType<typeof setInterval>>();
   const currentTime = useRef(0);
   const playerRef = useRef<any>(null);
-  const playerDivRef = useRef<HTMLDivElement>(null);
-  const videoEndedRef = useRef(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     loadVideo();
@@ -45,34 +44,25 @@ const VideoPlayer: React.FC = () => {
     };
   }, [id]);
 
-  // Inicializa YouTube IFrame API quando o vídeo carregar
+  // Inicializa YT.Player sobre o iframe existente para capturar eventos
   useEffect(() => {
     if (!video) return;
-    const videoId = video.url.match(/embed\/([^?&]+)/)?.[1];
-    if (!videoId) return;
-
-    videoEndedRef.current = false;
     setVideoEnded(false);
 
     const initPlayer = () => {
-      if (!playerDivRef.current) return;
+      if (!iframeRef.current) return;
       if (playerRef.current?.destroy) { playerRef.current.destroy(); playerRef.current = null; }
 
-      playerRef.current = new window.YT.Player(playerDivRef.current, {
-        videoId,
-        width: '100%',
-        height: '100%',
-        playerVars: { rel: 0, modestbranding: 1 },
+      playerRef.current = new window.YT.Player(iframeRef.current, {
         events: {
           onStateChange: (event: any) => {
-            const YT = window.YT.PlayerState;
-            if (event.data === YT.PLAYING) {
+            const S = window.YT.PlayerState;
+            if (event.data === S.PLAYING) {
               startProgress();
-            } else if (event.data === YT.PAUSED) {
+            } else if (event.data === S.PAUSED) {
               stopProgress();
-            } else if (event.data === YT.ENDED) {
+            } else if (event.data === S.ENDED) {
               stopProgress();
-              videoEndedRef.current = true;
               setVideoEnded(true);
             }
           },
@@ -80,17 +70,22 @@ const VideoPlayer: React.FC = () => {
       });
     };
 
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      if (!document.getElementById('yt-api-script')) {
-        const tag = document.createElement('script');
-        tag.id = 'yt-api-script';
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
+    // Aguarda o iframe estar no DOM antes de inicializar
+    const timer = setTimeout(() => {
+      if (window.YT && window.YT.Player) {
+        initPlayer();
+      } else {
+        if (!document.getElementById('yt-api-script')) {
+          const tag = document.createElement('script');
+          tag.id = 'yt-api-script';
+          tag.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(tag);
+        }
+        window.onYouTubeIframeAPIReady = initPlayer;
       }
-      window.onYouTubeIframeAPIReady = initPlayer;
-    }
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [video?.url]);
 
   const startProgress = () => {
@@ -120,13 +115,14 @@ const VideoPlayer: React.FC = () => {
         return;
       }
 
-      // Carrega módulo para descobrir próximo vídeo
       const modRes = await api.get(`/modules/${v.module.id}`);
       const videos: { id: string; order: number }[] = modRes.data.videos ?? [];
       videos.sort((a, b) => a.order - b.order);
       const idx = videos.findIndex(vi => vi.id === v.id);
       if (idx !== -1 && idx < videos.length - 1) {
         setNextVideoId(videos[idx + 1].id);
+      } else {
+        setNextVideoId(null);
       }
     } catch {
       alert('Erro ao carregar aula');
@@ -155,6 +151,10 @@ const VideoPlayer: React.FC = () => {
   };
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+
+  const playerUrl = video
+    ? (video.url.includes('?') ? `${video.url}&enablejsapi=1` : `${video.url}?enablejsapi=1`)
+    : '';
 
   const canComplete = videoEnded || completed;
 
@@ -187,7 +187,6 @@ const VideoPlayer: React.FC = () => {
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-6">
 
-        {/* Breadcrumb */}
         <button
           onClick={() => navigate(`/module/${video.module.id}`)}
           className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-5 transition-colors"
@@ -203,17 +202,23 @@ const VideoPlayer: React.FC = () => {
 
         <div className="grid lg:grid-cols-3 gap-5">
 
-          {/* Coluna principal */}
           <div className="lg:col-span-2 space-y-4">
 
-            {/* Player */}
-            <div className="rounded-2xl overflow-hidden border" style={{ background: '#000', borderColor: '#1e1e2e', boxShadow: '0 8px 40px rgba(0,0,0,0.7)', aspectRatio: '16/9' }}>
-              <div ref={playerDivRef} style={{ width: '100%', height: '100%' }} />
+            {/* Player — iframe normal com enablejsapi=1 */}
+            <div className="rounded-2xl overflow-hidden border" style={{ background: '#000', borderColor: '#1e1e2e', boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}>
+              <iframe
+                ref={iframeRef}
+                src={playerUrl}
+                title={video.title}
+                className="w-full aspect-video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             </div>
 
             {/* Info */}
             <div className="rounded-2xl overflow-hidden" style={{ background: '#12121a', border: '1px solid #252538', boxShadow: '0 4px 24px rgba(0,0,0,0.4)' }}>
-              <div className="h-[3px] animate-gradient-shift" style={{ background: completed ? 'linear-gradient(90deg,#31A8FF,#0ea5e9,#31A8FF)' : 'linear-gradient(90deg,#9333ea,#EA77FF,#9333ea)', backgroundSize: '200% 100%' }} />
+              <div className="h-[3px]" style={{ background: completed ? 'linear-gradient(90deg,#31A8FF,#0ea5e9)' : 'linear-gradient(90deg,#9333ea,#EA77FF)' }} />
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded"
@@ -272,7 +277,6 @@ const VideoPlayer: React.FC = () => {
               <h3 className="text-sm font-black mb-1" style={{ color: '#fafafa' }}>{video.module.title}</h3>
               <p className="text-xs mb-5" style={{ color: '#9494b8' }}>Aula {video.order}</p>
 
-              {/* Ferramentas por trilha */}
               {(() => {
                 const cat = sessionStorage.getItem('currentCategory') || 'editor';
                 const toolsMap: Record<string, { abbr: string; color: string }[]> = {
@@ -297,7 +301,6 @@ const VideoPlayer: React.FC = () => {
                 );
               })()}
 
-              {/* Dica */}
               <div className="rounded-xl p-4" style={{ background: '#1a1a25', border: '1px solid rgba(147,51,234,0.15)' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="#9333ea" viewBox="0 0 24 24">
