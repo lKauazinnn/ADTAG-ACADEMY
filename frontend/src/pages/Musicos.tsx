@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 
 const musicModules = [
@@ -78,7 +77,6 @@ const musicModules = [
 ];
 
 const Musicos: React.FC = () => {
-  const navigate = useNavigate();
   const totalAulas = musicModules.reduce((acc, m) => acc + m.aulas, 0);
   const featuredMod = musicModules[0];
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
