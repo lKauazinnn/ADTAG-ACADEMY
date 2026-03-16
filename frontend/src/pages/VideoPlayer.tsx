@@ -21,6 +21,7 @@ interface VideoData {
   completed: boolean;
   watchedTime: number;
   canWatch: boolean;
+  nextVideoId: string | null;
 }
 
 const VideoPlayer: React.FC = () => {
@@ -30,6 +31,7 @@ const VideoPlayer: React.FC = () => {
   const [completed, setCompleted] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const [nextVideoId, setNextVideoId] = useState<string | null>(null);
+  const [moduleId, setModuleId] = useState<string>('');
   const navigate = useNavigate();
   const progressInterval = useRef<ReturnType<typeof setInterval>>();
   const currentTime = useRef(0);
@@ -115,15 +117,8 @@ const VideoPlayer: React.FC = () => {
         return;
       }
 
-      const modRes = await api.get(`/modules/${v.module.id}`);
-      const videos: { id: string; order: number }[] = modRes.data.videos ?? [];
-      videos.sort((a, b) => a.order - b.order);
-      const idx = videos.findIndex(vi => vi.id === v.id);
-      if (idx !== -1 && idx < videos.length - 1) {
-        setNextVideoId(videos[idx + 1].id);
-      } else {
-        setNextVideoId(null);
-      }
+      setNextVideoId(v.nextVideoId);
+      setModuleId(v.module.id);
     } catch {
       alert('Erro ao carregar aula');
       navigate('/dashboard');
@@ -139,11 +134,10 @@ const VideoPlayer: React.FC = () => {
   const handleComplete = async () => {
     try {
       await api.post(`/videos/${id}/complete`, { watchedTime: video?.duration || 0 });
-      setCompleted(true);
       if (nextVideoId) {
         navigate(`/video/${nextVideoId}`);
       } else {
-        navigate(`/module/${video!.module.id}`);
+        navigate(`/module/${moduleId || video!.module.id}`);
       }
     } catch {
       alert('Erro ao concluir a aula');

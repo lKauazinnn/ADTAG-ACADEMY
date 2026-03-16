@@ -15,7 +15,8 @@ export class VideoController {
       if (error || !video) return res.status(404).json({ error: 'Vídeo não encontrado' });
       const { data: progress } = await supabase.from('video_progress').select('*').eq('userId', userId).eq('videoId', id).maybeSingle();
       const canWatch = await this.canWatchVideo(userId, video.order, video.moduleId);
-      return res.json({ id: video.id, title: video.title, description: video.description, url: video.url, duration: video.duration, order: video.order, module: { id: video.modules.id, title: video.modules.title }, completed: progress?.completed || false, watchedTime: progress?.watchedTime || 0, canWatch });
+      const { data: nextVideo } = await supabase.from('videos').select('id').eq('moduleId', video.moduleId).eq('"order"', video.order + 1).maybeSingle();
+      return res.json({ id: video.id, title: video.title, description: video.description, url: video.url, duration: video.duration, order: video.order, module: { id: video.modules.id, title: video.modules.title }, completed: progress?.completed || false, watchedTime: progress?.watchedTime || 0, canWatch, nextVideoId: nextVideo?.id || null });
     } catch (error) { console.error(error); return res.status(500).json({ error: 'Erro ao buscar vídeo' }); }
   }
 
