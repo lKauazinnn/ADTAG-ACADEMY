@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
   const loadData = async () => {
     try {
       const [modRes, progRes] = await Promise.all([
-        api.get('/modules'),
+        api.get('/modules?category=editor'),
         api.get('/progress'),
       ]);
       setModules(modRes.data);
