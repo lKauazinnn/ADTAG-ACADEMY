@@ -21,6 +21,8 @@ const VideoPlayer: React.FC = () => {
   const [video, setVideo] = useState<VideoData | null>(null);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [nextVideoId, setNextVideoId] = useState<string | null>(null);
   const navigate = useNavigate();
   const progressInterval = useRef<ReturnType<typeof setInterval>>();
   const currentTime = useRef(0);
@@ -30,15 +32,47 @@ const VideoPlayer: React.FC = () => {
     return () => { if (progressInterval.current) clearInterval(progressInterval.current); };
   }, [id]);
 
+  // Escuta mensagens do YouTube (postMessage) para detectar fim do vídeo
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== 'https://www.youtube.com') return;
+      try {
+        const data = JSON.parse(event.data as string);
+        if (data.event === 'onStateChange') {
+          if (data.info === 1) handlePlay();       // playing
+          else if (data.info === 2) handlePause(); // paused
+          else if (data.info === 0) {              // ended
+            handlePause();
+            setVideoEnded(true);
+          }
+        }
+      } catch { /* ignora mensagens não-JSON */ }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const loadVideo = async () => {
     try {
       const response = await api.get(`/videos/${id}`);
-      setVideo(response.data);
-      setCompleted(response.data.completed);
-      currentTime.current = response.data.watchedTime || 0;
-      if (!response.data.canWatch) {
+      const v: VideoData = response.data;
+      setVideo(v);
+      setCompleted(v.completed);
+      currentTime.current = v.watchedTime || 0;
+
+      if (!v.canWatch) {
         alert('Conclua a aula anterior para acessar esta.');
-        navigate(`/module/${response.data.module.id}`);
+        navigate(`/module/${v.module.id}`);
+        return;
+      }
+
+      // Carrega módulo para descobrir próximo vídeo
+      const modRes = await api.get(`/modules/${v.module.id}`);
+      const videos: { id: string; order: number }[] = modRes.data.videos ?? [];
+      videos.sort((a, b) => a.order - b.order);
+      const idx = videos.findIndex(vi => vi.id === v.id);
+      if (idx !== -1 && idx < videos.length - 1) {
+        setNextVideoId(videos[idx + 1].id);
       }
     } catch {
       alert('Erro ao carregar aula');
@@ -49,6 +83,7 @@ const VideoPlayer: React.FC = () => {
   };
 
   const handlePlay = () => {
+    if (progressInterval.current) return; // já rodando
     progressInterval.current = setInterval(() => {
       currentTime.current += 5;
       updateProgress(currentTime.current);
@@ -56,7 +91,7 @@ const VideoPlayer: React.FC = () => {
   };
 
   const handlePause = () => {
-    if (progressInterval.current) clearInterval(progressInterval.current);
+    if (progressInterval.current) { clearInterval(progressInterval.current); progressInterval.current = undefined; }
     updateProgress(currentTime.current);
   };
 
@@ -68,13 +103,24 @@ const VideoPlayer: React.FC = () => {
     try {
       await api.post(`/videos/${id}/complete`, { watchedTime: video?.duration || 0 });
       setCompleted(true);
-      alert('Aula concluída! Continue para a próxima. 🎨');
+      if (nextVideoId) {
+        navigate(`/video/${nextVideoId}`);
+      } else {
+        navigate(`/module/${video!.module.id}`);
+      }
     } catch {
       alert('Erro ao concluir a aula');
     }
   };
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+
+  // URL com enablejsapi=1 para receber eventos do YouTube via postMessage
+  const playerUrl = video
+    ? (video.url.includes('?') ? `${video.url}&enablejsapi=1` : `${video.url}?enablejsapi=1`)
+    : '';
+
+  const canComplete = videoEnded || completed;
 
   if (loading) {
     return (
@@ -127,13 +173,11 @@ const VideoPlayer: React.FC = () => {
             {/* Player */}
             <div className="rounded-2xl overflow-hidden border" style={{ background: '#000', borderColor: '#1e1e2e', boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}>
               <iframe
-                src={video.url}
+                src={playerUrl}
                 title={video.title}
                 className="w-full aspect-video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                onPlay={handlePlay}
-                onPause={handlePause}
               />
             </div>
 
@@ -170,17 +214,23 @@ const VideoPlayer: React.FC = () => {
                 </div>
 
                 {!completed ? (
-                  <button
-                    onClick={handleComplete}
-                    className="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all"
-                    style={{ background: 'linear-gradient(135deg,#9333ea,#6d28d9)', color: '#fff', boxShadow: '0 0 24px rgba(147,51,234,0.25)' }}
-                  >
-                    Marcar como Concluída
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      onClick={handleComplete}
+                      disabled={!canComplete}
+                      className="w-full py-3 rounded-xl font-bold text-sm tracking-wide transition-all"
+                      style={canComplete
+                        ? { background: 'linear-gradient(135deg,#9333ea,#6d28d9)', color: '#fff', boxShadow: '0 0 24px rgba(147,51,234,0.25)', cursor: 'pointer' }
+                        : { background: 'rgba(147,51,234,0.08)', color: '#9333ea55', border: '1px solid rgba(147,51,234,0.15)', cursor: 'not-allowed' }
+                      }
+                    >
+                      {canComplete ? 'Marcar como Concluída' : '⏳ Assista o vídeo até o fim para concluir'}
+                    </button>
+                  </div>
                 ) : (
                   <div className="py-3 rounded-xl text-sm font-bold text-center tracking-wide"
                     style={{ background: 'rgba(49,168,255,0.08)', color: '#31A8FF', border: '1px solid rgba(49,168,255,0.2)' }}>
-                    Aula concluída — continue para a próxima!
+                    {nextVideoId ? 'Aula concluída — indo para a próxima...' : 'Módulo concluído! 🎉'}
                   </div>
                 )}
               </div>
@@ -241,7 +291,7 @@ const VideoPlayer: React.FC = () => {
                   <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#9333ea' }}>Dica do instrutor</span>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: '#9494b8' }}>
-                  Assista até o fim e clique em "Marcar como Concluída" para desbloquear a próxima aula.
+                  Assista até o fim e clique em "Marcar como Concluída" para ir para a próxima aula.
                 </p>
               </div>
             </div>
