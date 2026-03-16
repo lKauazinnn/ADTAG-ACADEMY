@@ -36,3 +36,7 @@ logs/
 
 # Python venv
 .venv/
+
+# Scripts utilitários com credenciais (não versionar)
+seed-trilhas.js
+update-urls-trilhas.js
