@@ -9,6 +9,7 @@ import VideoPlayer from './pages/VideoPlayer';
 import AdminDashboard from './pages/AdminDashboard';
 import SocialMedia from './pages/SocialMedia';
 import Musicos from './pages/Musicos';
+import LumiChat from './components/LumiChat';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -53,10 +54,16 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return user.isAdmin ? <>{children}</> : <Navigate to="/dashboard" />;
 };
 
+const LumiWrapper: React.FC = () => {
+  const { user } = useAuth();
+  return user ? <LumiChat /> : null;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <LumiWrapper />
         <Routes>
           <Route
             path="/login"

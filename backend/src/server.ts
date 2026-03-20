@@ -6,6 +6,7 @@ import moduleRoutes from './routes/module.routes';
 import videoRoutes from './routes/video.routes';
 import progressRoutes from './routes/progress.routes';
 import adminRoutes from './routes/admin.routes';
+import chatRoutes from './routes/chat.routes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/modules', moduleRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
