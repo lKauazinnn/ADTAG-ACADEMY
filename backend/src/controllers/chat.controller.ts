@@ -186,6 +186,13 @@ export class ChatController {
       { role: 'user', content: message },
     ];
 
+    if (!process.env.GROQ_API_KEY) {
+      console.error('[Lumi] GROQ_API_KEY não configurada');
+      return res.status(500).json({ error: 'Serviço de IA não configurado' });
+    }
+
+    try {
+
     let pendingAction: { type: 'navigate'; path: string } | null = null;
     const MAX_TOOL_ROUNDS = 5;
 
@@ -240,5 +247,9 @@ export class ChatController {
     if (!reply) return res.status(500).json({ error: 'Erro ao gerar resposta' });
 
     return res.json({ reply, action: pendingAction });
+    } catch (err: any) {
+      console.error('[Lumi] Erro:', err?.message ?? err);
+      return res.status(500).json({ error: 'Erro interno ao processar mensagem' });
+    }
   }
 }
