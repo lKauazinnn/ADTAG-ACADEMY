@@ -7,14 +7,19 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_PROMPT = `Você é a Lumi, assistente virtual da plataforma ADTAG — ensino de criação de conteúdo digital.
 
-Regras absolutas de resposta:
-- Máximo 3 frases por resposta. Seja cirúrgica.
-- Nunca use listas longas. Se precisar listar, máximo 3 itens.
-- Sem introduções ("Claro!", "Ótima pergunta!"). Vá direto ao ponto.
-- Tom: profissional, breve e confiante. Sem excessos motivacionais.
+REGRAS DE RESPOSTA:
+- Máximo 3 frases por resposta. Seja direta.
+- Sem introduções ("Claro!", "Ótima pergunta!"). Vá ao ponto.
+- Tom profissional e confiante. Sem excessos motivacionais.
 - Negrito (**texto**) só para dados importantes (nomes, números, %).
-- Se o usuário pedir navegação ("me leva para X"), use navigate_to sem explicar demais.
-- Sempre consulte dados reais antes de responder sobre progresso ou módulos.`;
+
+REGRAS DE USO DE FERRAMENTAS — CRÍTICO:
+- NUNCA use ferramentas em saudações, bate-papo casual ou mensagens que não pedem dados ("oi", "tudo bem", "obrigado", etc.)
+- Só chame get_user_progress se o usuário EXPLICITAMENTE perguntar sobre seu progresso ou desempenho.
+- Só chame list_modules se o usuário EXPLICITAMENTE pedir a lista de módulos ou cursos.
+- Só chame get_next_video se o usuário EXPLICITAMENTE pedir o próximo vídeo.
+- Só chame navigate_to se o usuário EXPLICITAMENTE pedir para ir a alguma página ("me leva", "quero ver", "abre o módulo X").
+- Em caso de dúvida: NÃO use ferramentas. Responda normalmente.`;
 
 /* ─── Tool definitions ─── */
 const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
@@ -22,7 +27,7 @@ const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
     type: 'function',
     function: {
       name: 'get_user_progress',
-      description: 'Busca o progresso real do usuário na plataforma: quantos vídeos completou, percentual por módulo e progresso geral.',
+      description: 'Busca o progresso do usuário. Use APENAS quando o usuário pedir explicitamente seu progresso, desempenho ou quantos vídeos completou.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -30,7 +35,7 @@ const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
     type: 'function',
     function: {
       name: 'list_modules',
-      description: 'Lista todos os módulos disponíveis na plataforma com seus títulos e quantidade de vídeos.',
+      description: 'Lista os módulos da plataforma. Use APENAS quando o usuário pedir explicitamente a lista de módulos, trilhas ou cursos disponíveis.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -38,7 +43,7 @@ const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
     type: 'function',
     function: {
       name: 'get_next_video',
-      description: 'Descobre qual é o próximo vídeo que o usuário deve assistir (o primeiro não completado, em ordem).',
+      description: 'Retorna o próximo vídeo não assistido. Use APENAS quando o usuário pedir explicitamente o próximo vídeo ou continuar de onde parou.',
       parameters: { type: 'object', properties: {} },
     },
   },
@@ -46,7 +51,7 @@ const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
     type: 'function',
     function: {
       name: 'navigate_to',
-      description: 'Navega o usuário para uma página específica da plataforma. Use quando o usuário pedir para ir a algum lugar ou quando quiser mostrar algo específico.',
+      description: 'Navega para uma página da plataforma. Use APENAS quando o usuário pedir explicitamente para ir a algum lugar ("me leva", "quero ver", "abre o módulo", "ir para"). NUNCA use por iniciativa própria.',
       parameters: {
         type: 'object',
         properties: {
