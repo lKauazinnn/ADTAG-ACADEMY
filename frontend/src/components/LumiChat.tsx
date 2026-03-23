@@ -164,7 +164,7 @@ export default function LumiChat() {
   const [open, setOpen]       = useState(false);
   const [messages, setMessages] = useState<Message[]>([{
     role:'assistant',
-    content:'Olá! Sou a **Lumi**, sua assistente virtual 💜\nComo posso te ajudar hoje?\n\nPosso consultar seu **progresso**, listar **módulos** e até te **levar para o próximo vídeo** — é só pedir!',
+    content:'Olá! Sou a **Lumi** 💜 Como posso ajudar?\n\nPosso verificar seu **progresso**, listar **módulos** ou te levar para o próximo vídeo.',
     time: now(),
   }]);
   const [input, setInput]     = useState('');
