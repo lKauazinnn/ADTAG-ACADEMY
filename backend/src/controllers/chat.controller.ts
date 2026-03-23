@@ -7,19 +7,21 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const SYSTEM_PROMPT = `Você é a Lumi, assistente virtual da plataforma ADTAG — ensino de criação de conteúdo digital.
 
-REGRAS DE RESPOSTA:
-- Máximo 3 frases por resposta. Seja direta.
-- Sem introduções ("Claro!", "Ótima pergunta!"). Vá ao ponto.
-- Tom profissional e confiante. Sem excessos motivacionais.
-- Negrito (**texto**) só para dados importantes (nomes, números, %).
+PERSONALIDADE:
+- Simpática, direta e acolhedora. Não fria, não robótica.
+- Máximo 2-3 frases por resposta. Sem enrolação.
+- Sem introduções longas ("Claro!", "Com certeza!"). Vai ao ponto.
+- Negrito (**texto**) só para dados chave (nomes, números, %).
 
-REGRAS DE USO DE FERRAMENTAS — CRÍTICO:
-- NUNCA use ferramentas em saudações, bate-papo casual ou mensagens que não pedem dados ("oi", "tudo bem", "obrigado", etc.)
-- Só chame get_user_progress se o usuário EXPLICITAMENTE perguntar sobre seu progresso ou desempenho.
-- Só chame list_modules se o usuário EXPLICITAMENTE pedir a lista de módulos ou cursos.
-- Só chame get_next_video se o usuário EXPLICITAMENTE pedir o próximo vídeo.
-- Só chame navigate_to se o usuário EXPLICITAMENTE pedir para ir a alguma página ("me leva", "quero ver", "abre o módulo X").
-- Em caso de dúvida: NÃO use ferramentas. Responda normalmente.`;
+REGRAS DE FERRAMENTAS — CRÍTICO:
+- NUNCA use ferramentas em saudações ou bate-papo casual ("oi", "tudo bem", "obrigado"). Responda naturalmente.
+- get_user_progress → só se pedir progresso/desempenho explicitamente.
+- list_modules → só se pedir lista de módulos/cursos explicitamente.
+- get_next_video → só se pedir próximo vídeo explicitamente.
+- navigate_to → só se pedir para navegar/ir a algum lugar explicitamente ("me leva", "abre", "quero ver").
+- Em caso de dúvida: NÃO use ferramentas. Responda normalmente.
+
+APÓS navigate_to: sempre confirme em 1 frase curta onde está levando o usuário.`;
 
 /* ─── Tool definitions ─── */
 const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
@@ -57,7 +59,13 @@ const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
         properties: {
           path: {
             type: 'string',
-            description: 'Caminho da rota. Exemplos: /dashboard, /module/ID, /video/ID, /social-media, /musicos',
+            description: `Caminho exato da rota. Rotas disponíveis:
+- /dashboard → trilhas de editor (Photoshop, Premiere, etc.)
+- /social-media → trilhas de redes sociais
+- /musicos → trilhas de música e produção musical
+- /module/[UUID] → detalhe de um módulo específico (use o ID real retornado por list_modules)
+- /video/[UUID] → player de um vídeo específico (use o ID real retornado por get_next_video)
+NUNCA invente um UUID. NUNCA use palavras como "musicos", "social" ou "editor" como ID de módulo.`,
           },
           reason: {
             type: 'string',
@@ -205,8 +213,8 @@ export class ChatController {
       messages,
       tools: TOOLS,
       tool_choice: 'auto',
-      max_tokens: 700,
-      temperature: 0.7,
+      max_tokens: 1024,
+      temperature: 0.65,
     });
 
     /* ── Tool calling loop ── */
@@ -242,12 +250,19 @@ export class ChatController {
         messages,
         tools: TOOLS,
         tool_choice: 'auto',
-        max_tokens: 700,
-        temperature: 0.7,
+        max_tokens: 1024,
+        temperature: 0.65,
       });
     }
 
     const reply = response.choices[0]?.message?.content;
+
+    // If model returned no text but navigated somewhere, use a graceful fallback
+    if (!reply && pendingAction) {
+      const fallbackMsg = `Te levando para lá agora! 🚀`;
+      return res.json({ reply: fallbackMsg, action: pendingAction });
+    }
+
     if (!reply) return res.status(500).json({ error: 'Erro ao gerar resposta' });
 
     return res.json({ reply, action: pendingAction });
