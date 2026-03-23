@@ -285,21 +285,20 @@ export default function LumiChat() {
             <div style={{ position:'relative', flexShrink:0 }}>
               {/* Halo ring */}
               <div style={{
-                position:'absolute', inset:'-3px', borderRadius:'50%',
+                position:'absolute', inset:'-3px', borderRadius:'14px',
                 background:'conic-gradient(from 0deg, transparent, rgba(167,139,250,.8), transparent)',
                 animation:'lumiHalo 2.5s linear infinite',
               }}/>
-              <div style={{
-                position:'relative',
-                width:'40px', height:'40px', borderRadius:'50%',
-                background:'rgba(255,255,255,.15)',
-                border:'2px solid rgba(255,255,255,.35)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:'17px', fontWeight:800, color:'#fff',
-                zIndex:1,
-              }}>
-                L
-              </div>
+              <img
+                src="/lumi-icon.svg"
+                alt="Lumi"
+                style={{
+                  position:'relative',
+                  width:'40px', height:'40px', borderRadius:'11px',
+                  display:'block', zIndex:1,
+                  boxShadow:'0 2px 10px rgba(91,33,182,.45)',
+                }}
+              />
               {/* Online dot with ripple */}
               <span style={{
                 position:'absolute', bottom:'1px', right:'1px',
@@ -538,7 +537,13 @@ export default function LumiChat() {
           title="Lumi — Assistente Virtual"
         >
           <span key={fabKey} className="lumi-icon-anim">
-            {open ? <CloseIcon/> : <ChatIcon/>}
+            {open ? <CloseIcon/> : (
+              <img
+                src="/lumi-mark.svg"
+                alt="Lumi"
+                style={{ width:'36px', height:'36px', display:'block' }}
+              />
+            )}
           </span>
         </button>
       </div>
