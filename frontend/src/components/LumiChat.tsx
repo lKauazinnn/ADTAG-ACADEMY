@@ -427,19 +427,56 @@ export default function LumiChat() {
           {/* ── Navigating banner ── */}
           {navigating && (
             <div style={{
-              margin:'0 16px 8px',
-              padding:'10px 14px',
-              borderRadius:'12px',
-              background:'linear-gradient(135deg,rgba(91,33,182,.35),rgba(124,58,237,.25))',
-              border:'1px solid rgba(139,92,246,.35)',
-              display:'flex', alignItems:'center', gap:'10px',
+              margin:'0 14px 10px',
+              padding:'12px 16px',
+              borderRadius:'14px',
+              background:'linear-gradient(135deg,rgba(109,40,217,.55),rgba(76,29,149,.4))',
+              border:'1px solid rgba(167,139,250,.25)',
+              boxShadow:'0 4px 24px rgba(91,33,182,.3), inset 0 1px 0 rgba(255,255,255,.06)',
+              display:'flex', alignItems:'center', gap:'12px',
               animation:'lumiPop .3s cubic-bezier(.34,1.56,.64,1)',
               flexShrink:0,
+              overflow:'hidden',
+              position:'relative',
             }}>
-              <span style={{ fontSize:'18px', display:'inline-block', animation:'lumiHalo 1s linear infinite' }}>🚀</span>
-              <span style={{ color:'rgba(196,181,253,.9)', fontSize:'13px', fontWeight:500 }}>
-                Navegando para a página...
-              </span>
+              {/* shimmer sweep */}
+              <div style={{
+                position:'absolute', inset:0,
+                background:'linear-gradient(110deg, transparent 25%, rgba(255,255,255,.06) 50%, transparent 75%)',
+                backgroundSize:'200% 100%',
+                animation:'lumiShimmer 1.4s linear infinite',
+              }}/>
+              {/* icon with pulse */}
+              <div style={{
+                position:'relative', flexShrink:0,
+                width:'32px', height:'32px', borderRadius:'8px',
+                background:'rgba(139,92,246,.25)',
+                border:'1px solid rgba(167,139,250,.3)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <span style={{ fontSize:'15px', animation:'lumiHalo 1.2s linear infinite', display:'inline-block' }}>🚀</span>
+              </div>
+              {/* text */}
+              <div style={{ position:'relative', zIndex:1 }}>
+                <div style={{ color:'#e9d5ff', fontSize:'12.5px', fontWeight:700, letterSpacing:'.2px' }}>
+                  Navegando...
+                </div>
+                <div style={{ color:'rgba(196,181,253,.6)', fontSize:'11px', marginTop:'2px' }}>
+                  Preparando sua página
+                </div>
+              </div>
+              {/* loading dots right side */}
+              <div style={{ marginLeft:'auto', display:'flex', gap:'4px', alignItems:'center', position:'relative', zIndex:1 }}>
+                {[0,1,2].map(i => (
+                  <span key={i} style={{
+                    width:'5px', height:'5px', borderRadius:'50%',
+                    background:'rgba(167,139,250,.7)',
+                    display:'inline-block',
+                    animation:'lumiBounce 1.1s ease-in-out infinite',
+                    animationDelay:`${i*.18}s`,
+                  }}/>
+                ))}
+              </div>
             </div>
           )}
 

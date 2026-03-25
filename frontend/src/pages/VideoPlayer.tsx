@@ -275,8 +275,8 @@ const VideoPlayer: React.FC = () => {
                 const cat = sessionStorage.getItem('currentCategory') || 'editor';
                 const toolsMap: Record<string, { abbr: string; color: string }[]> = {
                   editor:  [{ abbr: 'Ps', color: '#31A8FF' }, { abbr: 'Pr', color: '#EA77FF' }, { abbr: 'Ai', color: '#FF9A00' }],
-                  social:  [{ abbr: 'IG', color: '#E1306C' }, { abbr: 'TK', color: '#69C9D0' }, { abbr: 'YT', color: '#FF3333' }],
-                  musicos: [{ abbr: 'DAW', color: '#FF9A00' }, { abbr: 'MIX', color: '#9333ea' }, { abbr: 'DST', color: '#1DB954' }],
+                  social:  [{ abbr: 'Ps', color: '#31A8FF' }, { abbr: 'Pr', color: '#EA77FF' }, { abbr: 'Ai', color: '#FF9A00' }, { abbr: 'Ae', color: '#9999FF' }, { abbr: 'Lr', color: '#31C5F4' }, { abbr: 'Id', color: '#FF3870' }],
+                  musicos: [{ abbr: 'Ps', color: '#31A8FF' }, { abbr: 'Pr', color: '#EA77FF' }, { abbr: 'Ai', color: '#FF9A00' }, { abbr: 'Ae', color: '#9999FF' }, { abbr: 'Lr', color: '#31C5F4' }, { abbr: 'Id', color: '#FF3870' }],
                 };
                 const tools = toolsMap[cat];
                 if (!tools) return null;

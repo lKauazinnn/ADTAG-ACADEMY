@@ -12,6 +12,14 @@ const musicColors: Record<number, { color: string; dark: string; abbr: string }>
   25: { color: '#FF3333', dark: '#5c0000', abbr: 'MK' },
 };
 const fallback = { color: '#FF9A00', dark: '#5c3600', abbr: 'MU' };
+const creativeSuiteTools = [
+  { abbr: 'Ps', color: '#31A8FF' },
+  { abbr: 'Pr', color: '#EA77FF' },
+  { abbr: 'Ai', color: '#FF9A00' },
+  { abbr: 'Ae', color: '#9999FF' },
+  { abbr: 'Lr', color: '#31C5F4' },
+  { abbr: 'Id', color: '#FF3870' },
+];
 
 interface Module {
   id: string;
@@ -75,9 +83,17 @@ const Musicos: React.FC = () => {
               <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1, color: '#fafafa', marginBottom: '0.75rem' }}>
                 Trilha Músicos
               </h1>
-              <p style={{ color: '#9494b8', fontSize: '0.875rem', maxWidth: 360, lineHeight: 1.7, marginBottom: '1.5rem' }}>
+              <p style={{ color: '#9494b8', fontSize: '0.875rem', maxWidth: 360, lineHeight: 1.7, marginBottom: '0.9rem' }}>
                 Teoria, Produção, Mixagem, Voz, Distribuição e Marketing para artistas
               </p>
+              <div className="flex flex-wrap gap-2 mb-5">
+                {creativeSuiteTools.map(tool => (
+                  <span key={tool.abbr} className="text-[10px] font-black px-2.5 py-1 rounded-lg"
+                    style={{ fontFamily: 'monospace', color: tool.color, background: tool.color + '12', border: `1px solid ${tool.color}33` }}>
+                    {tool.abbr}
+                  </span>
+                ))}
+              </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => featuredMod && navigate(`/module/${featuredMod.id}`)} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider" style={{ background: 'linear-gradient(135deg, #FF9A00, #9333ea)', color: '#fff', boxShadow: '0 4px 20px rgba(255,154,0,0.35)' }}>
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
