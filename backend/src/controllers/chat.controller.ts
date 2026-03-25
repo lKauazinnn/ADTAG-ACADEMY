@@ -24,7 +24,7 @@ REGRAS DE FERRAMENTAS — CRÍTICO:
 APÓS navigate_to: sempre confirme em 1 frase curta onde está levando o usuário.`;
 
 /* ─── Tool definitions ─── */
-const TOOLS: Groq.Chat.CompletionCreateParams.Tool[] = [
+const TOOLS: Groq.Chat.ChatCompletionTool[] = [
   {
     type: 'function',
     function: {

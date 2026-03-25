@@ -74,6 +74,8 @@ npm run dev
 ### Autenticação
 - `POST /api/auth/register` - Registrar usuário
 - `POST /api/auth/login` - Login
+- `POST /api/auth/forgot-password` - Enviar e-mail de redefinição
+- `POST /api/auth/reset-password` - Redefinir senha com token
 
 ### Módulos
 - `GET /api/modules` - Listar todos os módulos

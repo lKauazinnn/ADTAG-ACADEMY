@@ -120,6 +120,11 @@ const Login: React.FC = () => {
                   onBlur={e => { e.target.style.borderColor = '#1e1e2e'; e.target.style.boxShadow = ''; }}
                   placeholder="••••••••"
                 />
+                <div className="mt-2 text-right">
+                  <Link to="/reset-password" className="text-[11px] font-semibold transition-colors" style={{ color: '#71c4ffce' }}>
+                    Esqueci minha senha
+                  </Link>
+                </div>
               </div>
 
               <button

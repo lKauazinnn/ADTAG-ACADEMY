@@ -9,6 +9,7 @@ import VideoPlayer from './pages/VideoPlayer';
 import AdminDashboard from './pages/AdminDashboard';
 import SocialMedia from './pages/SocialMedia';
 import Musicos from './pages/Musicos';
+import ResetPassword from './pages/ResetPassword';
 import LumiChat from './components/LumiChat';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,6 +82,7 @@ function App() {
               </PublicRoute>
             }
           />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route
             path="/dashboard"
             element={

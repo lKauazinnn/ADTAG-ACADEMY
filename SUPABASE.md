@@ -100,6 +100,26 @@ Para ver suas tabelas criadas:
 
 Seu backend está configurado e funcionando com Supabase!
 
+## 🔐 Habilitar "Esqueci minha senha"
+
+Para o fluxo de redefinição por e-mail funcionar, execute no SQL Editor do Supabase:
+
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS "resetPasswordToken" TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS "resetPasswordExpires" TIMESTAMP;
+```
+
+Depois configure no `.env` do backend as variáveis SMTP:
+
+```env
+FRONTEND_URL="http://localhost:5173"
+SMTP_HOST="smtp.seuprovedor.com"
+SMTP_PORT=587
+SMTP_USER="seu_email@dominio.com"
+SMTP_PASS="sua_senha_ou_app_password"
+SMTP_FROM="Plataforma de Vídeos <no-reply@dominio.com>"
+```
+
 ## 🔍 Prisma Studio
 
 Para visualizar e editar dados graficamente:
