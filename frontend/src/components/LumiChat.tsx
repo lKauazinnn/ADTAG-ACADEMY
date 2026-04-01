@@ -268,37 +268,43 @@ export default function LumiChat() {
           <div style={{
             display:'flex', alignItems:'center', gap:'12px',
             padding:'15px 18px',
-            background:'linear-gradient(270deg,#5b21b6,#7c3aed,#6d28d9,#4f46e5)',
+            background:'linear-gradient(270deg,#E1306C,#9333ea,#7c3aed,#E1306C)',
             backgroundSize:'400% 400%',
             animation:'lumiGrad 6s ease infinite',
             borderBottom:'1px solid rgba(255,255,255,.07)',
             flexShrink:0,
           }}>
 
-            {/* Avatar with spinning halo */}
+            {/* Avatar */}
             <div style={{ position:'relative', flexShrink:0 }}>
               {/* Halo ring */}
               <div style={{
-                position:'absolute', inset:'-3px', borderRadius:'14px',
-                background:'conic-gradient(from 0deg, transparent, rgba(167,139,250,.8), transparent)',
+                position:'absolute', inset:'-3px', borderRadius:'50%',
+                background:'conic-gradient(from 0deg, transparent, #E1306C, #9333ea, transparent)',
                 animation:'lumiHalo 2.5s linear infinite',
               }}/>
-              <img
-                src="/lumi-icon.svg"
-                alt="Lumi"
-                style={{
-                  position:'relative',
-                  width:'40px', height:'40px', borderRadius:'11px',
-                  display:'block', zIndex:1,
-                  boxShadow:'0 2px 10px rgba(91,33,182,.45)',
-                }}
-              />
-              {/* Online dot with ripple */}
+              {/* Avatar badge */}
+              <div style={{
+                position:'relative', zIndex:1,
+                width:'46px', height:'46px', borderRadius:'50%',
+                background:'linear-gradient(135deg, #E1306C 0%, #9333ea 100%)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                boxShadow:'0 4px 16px rgba(225,48,108,.5)',
+              }}>
+                {/* Sparkle L mark */}
+                <svg width="26" height="26" viewBox="0 0 56 56" fill="none">
+                  <path d="M17,9 L17,40 L39,40" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17,9 L19.2,15.5 L17,22 L14.8,15.5 Z" fill="white"/>
+                  <path d="M10.5,15.5 L17,13.3 L23.5,15.5 L17,17.7 Z" fill="white"/>
+                  <circle cx="17" cy="15.5" r="2.4" fill="white"/>
+                </svg>
+              </div>
+              {/* Online dot */}
               <span style={{
                 position:'absolute', bottom:'1px', right:'1px',
-                width:'10px', height:'10px', borderRadius:'50%',
+                width:'11px', height:'11px', borderRadius:'50%',
                 background:'#4ade80',
-                border:'2px solid #5b21b6',
+                border:'2px solid #1e0530',
                 animation:'lumiRipple 1.8s ease-out infinite',
                 zIndex:2,
               }}/>
@@ -569,11 +575,12 @@ export default function LumiChat() {
         >
           <span key={fabKey} className="lumi-icon-anim">
             {open ? <CloseIcon/> : (
-              <img
-                src="/lumi-mark.svg"
-                alt="Lumi"
-                style={{ width:'36px', height:'36px', display:'block' }}
-              />
+              <svg width="28" height="28" viewBox="0 0 56 56" fill="none">
+                <path d="M17,9 L17,40 L39,40" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M17,9 L19.2,15.5 L17,22 L14.8,15.5 Z" fill="white"/>
+                <path d="M10.5,15.5 L17,13.3 L23.5,15.5 L17,17.7 Z" fill="white"/>
+                <circle cx="17" cy="15.5" r="2.4" fill="white"/>
+              </svg>
             )}
           </span>
         </button>

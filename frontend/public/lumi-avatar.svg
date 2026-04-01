@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Background -->
+    <radialGradient id="bgGrad" cx="40%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#1e082a"/>
+      <stop offset="60%" stop-color="#100518"/>
+      <stop offset="100%" stop-color="#050509"/>
+    </radialGradient>
+
+    <!-- Brand gradient pink → purple -->
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1306C"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+
+    <!-- Brand horizontal (for text/ring) -->
+    <linearGradient id="brandH" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E1306C"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+
+    <!-- Skin tone -->
+    <radialGradient id="skin" cx="42%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#ffe8cf"/>
+      <stop offset="100%" stop-color="#f5c49a"/>
+    </radialGradient>
+
+    <!-- Hair -->
+    <linearGradient id="hairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3e1f0c"/>
+      <stop offset="100%" stop-color="#261208"/>
+    </linearGradient>
+
+    <!-- Bottom fade for text area -->
+    <linearGradient id="bottomFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#050509" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#050509" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#050509" stop-opacity="1"/>
+    </linearGradient>
+
+    <!-- Glow for headphones -->
+    <filter id="hpGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#E1306C" flood-opacity="0.55"/>
+    </filter>
+
+    <!-- Badge outer glow -->
+    <filter id="outerGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="14" flood-color="#9333ea" flood-opacity="0.45"/>
+    </filter>
+
+    <!-- Soft blur for blush -->
+    <filter id="blushBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+
+    <!-- Clip circle -->
+    <clipPath id="circClip">
+      <circle cx="100" cy="100" r="92"/>
+    </clipPath>
+
+    <!-- Clip for bottom text fade -->
+    <clipPath id="bottomClip">
+      <rect x="8" y="142" width="184" height="54"/>
+    </clipPath>
+  </defs>
+
+  <!-- ═══ BACKGROUND ═══ -->
+  <circle cx="100" cy="100" r="96" fill="url(#bgGrad)" filter="url(#outerGlow)"/>
+
+  <!-- Subtle inner glow blob -->
+  <ellipse cx="100" cy="80" rx="65" ry="55" fill="#E1306C" opacity="0.05" clip-path="url(#circClip)"/>
+
+  <!-- ═══ HAIR — back layer ═══ -->
+  <!-- Main hair mass -->
+  <ellipse cx="100" cy="76" rx="52" ry="48" fill="url(#hairGrad)" clip-path="url(#circClip)"/>
+  <!-- Hair side strands left -->
+  <path d="M52,98 Q44,122 46,155 Q52,162 57,153 Q56,130 62,110 Z" fill="#2e1508" clip-path="url(#circClip)"/>
+  <!-- Hair side strands right -->
+  <path d="M148,98 Q156,122 154,155 Q148,162 143,153 Q144,130 138,110 Z" fill="#2e1508" clip-path="url(#circClip)"/>
+
+  <!-- ═══ FACE ═══ -->
+  <ellipse cx="100" cy="115" rx="46" ry="50" fill="url(#skin)"/>
+
+  <!-- ═══ HAIR — front (bangs) ═══ -->
+  <!-- Top curve + bangs base -->
+  <path d="M50,86 Q54,50 100,47 Q146,50 150,86 Q142,62 100,64 Q58,62 50,86 Z" fill="#4a2412"/>
+  <!-- Left bang chunk -->
+  <path d="M50,86 Q54,70 64,74 Q59,88 60,97 Z" fill="#3e1f0c"/>
+  <!-- Right bang chunk -->
+  <path d="M150,86 Q146,70 136,74 Q141,88 140,97 Z" fill="#3e1f0c"/>
+  <!-- Center parting highlight -->
+  <path d="M90,50 Q96,45 104,48 Q100,54 90,50 Z" fill="#5a2e14" opacity="0.8"/>
+
+  <!-- Pink hair highlight (brand accent) -->
+  <path d="M82,54 Q88,48 95,50 Q91,56 83,57 Z" fill="#E1306C" opacity="0.8"/>
+
+  <!-- ═══ HEADPHONES ═══ -->
+  <!-- Band arc over hair -->
+  <path d="M60,100 Q62,44 100,40 Q138,44 140,100"
+        fill="none" stroke="url(#brand)" stroke-width="9" stroke-linecap="round"
+        filter="url(#hpGlow)"/>
+
+  <!-- Left ear cup outer -->
+  <ellipse cx="56" cy="104" rx="17" ry="19" fill="url(#brand)" filter="url(#hpGlow)"/>
+  <!-- Left ear cup inner ring -->
+  <ellipse cx="56" cy="104" rx="11" ry="12" fill="#0e0518"/>
+  <!-- Left cup LED dot -->
+  <circle cx="56" cy="104" r="3.5" fill="#E1306C" opacity="0.7"/>
+
+  <!-- Right ear cup outer -->
+  <ellipse cx="144" cy="104" rx="17" ry="19" fill="url(#brand)" filter="url(#hpGlow)"/>
+  <!-- Right ear cup inner ring -->
+  <ellipse cx="144" cy="104" rx="11" ry="12" fill="#0e0518"/>
+  <!-- Right cup LED dot -->
+  <circle cx="144" cy="104" r="3.5" fill="#9333ea" opacity="0.7"/>
+
+  <!-- ═══ FACE FEATURES ═══ -->
+  <!-- Eyebrows -->
+  <path d="M78,110 Q85,105 92,108" fill="none" stroke="#5a3010" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M108,108 Q115,105 122,110" fill="none" stroke="#5a3010" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Eyes — happy closed crescents (anime style) -->
+  <path d="M78,119 Q85.5,111.5 93,119" fill="none" stroke="#2a1008" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M107,119 Q114.5,111.5 122,119" fill="none" stroke="#2a1008" stroke-width="3.2" stroke-linecap="round"/>
+
+  <!-- Lower eyelash detail -->
+  <path d="M79,119 Q80,121 81,119" fill="none" stroke="#2a1008" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M121,119 Q120,121 119,119" fill="none" stroke="#2a1008" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Blush marks -->
+  <ellipse cx="80" cy="127" rx="11" ry="6" fill="#E1306C" opacity="0.22" filter="url(#blushBlur)"/>
+  <ellipse cx="120" cy="127" rx="11" ry="6" fill="#E1306C" opacity="0.22" filter="url(#blushBlur)"/>
+
+  <!-- Nose (subtle) -->
+  <path d="M98,133 Q100,136 102,133" fill="none" stroke="#c89070" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Smile -->
+  <path d="M88,143 Q100,154 112,143" fill="none" stroke="#c07050" stroke-width="2.8" stroke-linecap="round"/>
+
+  <!-- ═══ BOTTOM TEXT AREA ═══ -->
+  <!-- Fade overlay -->
+  <circle cx="100" cy="100" r="92" fill="url(#bottomFade)" clip-path="url(#circClip)"/>
+
+  <!-- "LUMI" wordmark -->
+  <text x="100" y="183"
+    font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    font-size="22"
+    font-weight="900"
+    letter-spacing="5"
+    text-anchor="middle"
+    fill="url(#brandH)"
+    filter="url(#hpGlow)"
+  >LUMI</text>
+
+  <!-- Small tagline -->
+  <text x="100" y="194"
+    font-family="'Segoe UI', Arial, sans-serif"
+    font-size="6.5"
+    font-weight="500"
+    letter-spacing="2.5"
+    text-anchor="middle"
+    fill="#9333ea"
+    opacity="0.65"
+  >ASSISTENTE VIRTUAL</text>
+
+  <!-- ═══ OUTER RING ═══ -->
+  <circle cx="100" cy="100" r="93" fill="none" stroke="url(#brand)" stroke-width="1.8" opacity="0.65"/>
+  <!-- Inner ring subtle -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#brand)" stroke-width="0.5" opacity="0.2"/>
+</svg>

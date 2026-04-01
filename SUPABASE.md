@@ -100,25 +100,26 @@ Para ver suas tabelas criadas:
 
 Seu backend está configurado e funcionando com Supabase!
 
-## 🔐 Habilitar "Esqueci minha senha"
+## 🔐 Habilitar "Esqueci minha senha" (sem SMTP próprio)
 
-Para o fluxo de redefinição por e-mail funcionar, execute no SQL Editor do Supabase:
+O projeto está configurado para usar o envio de recuperação nativo do Supabase Auth.
 
-```sql
-ALTER TABLE users ADD COLUMN IF NOT EXISTS "resetPasswordToken" TEXT;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS "resetPasswordExpires" TIMESTAMP;
-```
+No Dashboard do Supabase:
 
-Depois configure no `.env` do backend as variáveis SMTP:
+1. Vá em **Authentication** → **URL Configuration**
+2. Configure:
+  - **Site URL**: `http://localhost:5173` (ou sua URL de produção)
+  - **Redirect URLs**: inclua `http://localhost:5173/reset-password`
+
+No `.env` do backend, mantenha:
 
 ```env
 FRONTEND_URL="http://localhost:5173"
-SMTP_HOST="smtp.seuprovedor.com"
-SMTP_PORT=587
-SMTP_USER="seu_email@dominio.com"
-SMTP_PASS="sua_senha_ou_app_password"
-SMTP_FROM="Plataforma de Vídeos <no-reply@dominio.com>"
+SUPABASE_URL="https://SEU-PROJETO.supabase.co"
+SUPABASE_SERVICE_KEY="sua_service_role_key"
 ```
+
+Sem SMTP próprio: o Supabase Auth envia o e-mail de recuperação.
 
 ## 🔍 Prisma Studio
 

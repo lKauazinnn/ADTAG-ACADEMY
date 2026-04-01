@@ -12,14 +12,6 @@ const smColors: Record<number, { color: string; dark: string; abbr: string }> = 
   15: { color: '#31C5F4', dark: '#0b4458', abbr: 'MT' },
 };
 const fallback = { color: '#E1306C', dark: '#5c0e27', abbr: 'SM' };
-const creativeSuiteTools = [
-  { abbr: 'Ps', color: '#31A8FF' },
-  { abbr: 'Pr', color: '#EA77FF' },
-  { abbr: 'Ai', color: '#FF9A00' },
-  { abbr: 'Ae', color: '#9999FF' },
-  { abbr: 'Lr', color: '#31C5F4' },
-  { abbr: 'Id', color: '#FF3870' },
-];
 
 interface Module {
   id: string;
@@ -86,15 +78,7 @@ const SocialMedia: React.FC = () => {
               <p style={{ color: '#9494b8', fontSize: '0.875rem', maxWidth: 360, lineHeight: 1.7, marginBottom: '0.9rem' }}>
                 Domine Instagram, TikTok, YouTube, Copy e muito mais
               </p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {creativeSuiteTools.map(tool => (
-                  <span key={tool.abbr} className="text-[10px] font-black px-2.5 py-1 rounded-lg"
-                    style={{ fontFamily: 'monospace', color: tool.color, background: tool.color + '12', border: `1px solid ${tool.color}33` }}>
-                    {tool.abbr}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
+<div className="flex items-center gap-2">
                 <button onClick={() => featuredMod && navigate(`/module/${featuredMod.id}`)} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider" style={{ background: 'linear-gradient(135deg, #E1306C, #9333ea)', color: '#fff', boxShadow: '0 4px 20px rgba(225,48,108,0.35)' }}>
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   Começar trilha

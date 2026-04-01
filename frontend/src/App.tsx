@@ -62,7 +62,8 @@ const LumiWrapper: React.FC = () => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <BrowserRouter>
       <AuthProvider>
         <LumiWrapper />
         <Routes>
@@ -134,7 +135,8 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </>
   );
 }
 

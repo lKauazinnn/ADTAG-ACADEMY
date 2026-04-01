@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import PostLoginIntro from '../components/PostLoginIntro';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { Module, Progress } from '../types';
@@ -43,10 +44,19 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [ringPct, setRingPct] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [showPostLoginIntro, setShowPostLoginIntro] = useState(
+    () => sessionStorage.getItem('postLoginIntro') === '1'
+  );
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  useEffect(() => { sessionStorage.setItem('currentCategory', 'editor'); loadData(); }, []);
+  useEffect(() => {
+    sessionStorage.setItem('currentCategory', 'editor');
+    if (showPostLoginIntro) {
+      sessionStorage.removeItem('postLoginIntro');
+    }
+    loadData();
+  }, []);
   useEffect(() => {
     if (progress) {
       const t = setTimeout(() => setRingPct(progress.overallProgress ?? 0), 400);
@@ -74,6 +84,18 @@ const Dashboard: React.FC = () => {
     const m = Math.floor((secs % 3600) / 60);
     return h > 0 ? `${h}h ${m}min` : `${m}min`;
   };
+
+  if (showPostLoginIntro) {
+    return (
+      <div className="min-h-screen" style={{ background: '#050509' }}>
+        <PostLoginIntro
+          userName={user?.name}
+          readyToExit={!loading}
+          onFinish={() => setShowPostLoginIntro(false)}
+        />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

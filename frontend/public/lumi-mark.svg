@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" fill="none">
   <defs>
-    <!-- L stroke gradient: white → lavender -->
+    <!-- L stroke gradient -->
     <linearGradient id="lGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#ddd6fe"/>
+      <stop offset="100%" stop-color="#f9a8d4"/>
     </linearGradient>
 
     <!-- Sparkle gradient -->
     <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
     </linearGradient>
 
-    <!-- Glow filter for the L -->
-    <filter id="lGlow" x="-30%" y="-20%" width="160%" height="140%">
+    <!-- Glow for L -->
+    <filter id="lGlow" x="-30%" y="-25%" width="160%" height="150%">
       <feGaussianBlur stdDeviation="1.8" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
@@ -21,9 +21,9 @@
       </feMerge>
     </filter>
 
-    <!-- Glow for star sparkle -->
-    <filter id="starGlow" x="-120%" y="-120%" width="340%" height="340%">
-      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+    <!-- Glow for sparkle -->
+    <filter id="sparkGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -31,7 +31,7 @@
     </filter>
   </defs>
 
-  <!-- Letter "L" — vertical bar -->
+  <!-- Letter "L" -->
   <path d="M17,9 L17,40 L39,40"
         stroke="url(#lGrad)"
         stroke-width="7"
@@ -40,19 +40,16 @@
         fill="none"
         filter="url(#lGlow)"/>
 
-  <!-- 4-Pointed star at tip of L -->
-  <!-- Vertical blade -->
-  <path d="M17,9 L19.2,15.5 L17,22 L14.8,15.5 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
-  <!-- Horizontal blade -->
-  <path d="M10.5,15.5 L17,13.3 L23.5,15.5 L17,17.7 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
-  <!-- Bright centre -->
-  <circle cx="17" cy="15.5" r="2.4" fill="white" filter="url(#starGlow)"/>
+  <!-- 4-Pointed star at top of L -->
+  <path d="M17,9 L19.2,15.5 L17,22 L14.8,15.5 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <path d="M10.5,15.5 L17,13.3 L23.5,15.5 L17,17.7 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <circle cx="17" cy="15.5" r="2.4" fill="white" filter="url(#sparkGlow)"/>
 
-  <!-- Small secondary sparkle near foot -->
-  <path d="M39.5,33 L40.8,36.5 L39.5,40 L38.2,36.5 Z" fill="white" opacity="0.6" filter="url(#starGlow)"/>
-  <path d="M36,36.5 L39.5,35.2 L43,36.5 L39.5,37.8 Z" fill="white" opacity="0.6" filter="url(#starGlow)"/>
+  <!-- Small sparkle at foot of L -->
+  <path d="M39.5,33 L40.8,36.5 L39.5,40 L38.2,36.5 Z" fill="white" opacity="0.55" filter="url(#sparkGlow)"/>
+  <path d="M36,36.5 L39.5,35.2 L43,36.5 L39.5,37.8 Z" fill="white" opacity="0.55" filter="url(#sparkGlow)"/>
 
   <!-- Ambient dots -->
-  <circle cx="42" cy="13" r="1.4" fill="#ddd6fe" opacity="0.75"/>
-  <circle cx="34" cy="18" r="0.9" fill="white" opacity="0.45"/>
+  <circle cx="42" cy="12" r="1.5" fill="#fca5a5" opacity="0.65"/>
+  <circle cx="34" cy="18" r="0.9" fill="white" opacity="0.4"/>
 </svg>

@@ -27,6 +27,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       await login({ email, password });
+      sessionStorage.setItem('postLoginIntro', '1');
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Credenciais inválidas');

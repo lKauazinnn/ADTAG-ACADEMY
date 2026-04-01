@@ -1,54 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" width="320" height="96">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="340" height="100">
   <defs>
-    <!-- Vibrant purple radial background for badge -->
-    <radialGradient id="bg" cx="36%" cy="28%" r="78%">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="55%" stop-color="#5b21b6"/>
-      <stop offset="100%" stop-color="#2e1065"/>
+    <!-- Badge background: dark, subtle gradient -->
+    <radialGradient id="bgGrad" cx="35%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#2a0a1f"/>
+      <stop offset="50%" stop-color="#1a0530"/>
+      <stop offset="100%" stop-color="#050509"/>
     </radialGradient>
 
-    <!-- L stroke: white → soft lavender -->
-    <linearGradient id="lGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#ddd6fe"/>
+    <!-- Brand gradient: pink → purple -->
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1306C"/>
+      <stop offset="100%" stop-color="#9333ea"/>
     </linearGradient>
 
-    <!-- Outer ring gradient for badge -->
-    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.9"/>
-      <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.7"/>
+    <!-- L stroke: white → pink-lavender -->
+    <linearGradient id="lGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f9a8d4"/>
+    </linearGradient>
+
+    <!-- Ring border gradient -->
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1306C" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#9333ea" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#E1306C" stop-opacity="0.4"/>
     </linearGradient>
 
     <!-- Wordmark gradient -->
-    <linearGradient id="wordmark" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#ddd6fe"/>
+    <linearGradient id="wordGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#f9d6e8"/>
+      <stop offset="100%" stop-color="#e879f9"/>
     </linearGradient>
 
     <!-- Sparkle gradient -->
     <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
     </linearGradient>
 
-    <!-- Badge drop shadow -->
+    <!-- Badge shadow -->
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#4c1d95" flood-opacity="0.65"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#E1306C" flood-opacity="0.25"/>
     </filter>
 
     <!-- Glow for L -->
-    <filter id="lGlow" x="-25%" y="-20%" width="150%" height="140%">
-      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+    <filter id="lGlow" x="-30%" y="-25%" width="160%" height="150%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <!-- Glow for star -->
-    <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+    <!-- Glow for sparkle -->
+    <filter id="sparkGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -56,27 +63,30 @@
     </filter>
 
     <!-- Text glow -->
-    <filter id="textGlow" x="-10%" y="-20%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="1" stdDeviation="5" flood-color="#9333ea" flood-opacity="0.4"/>
+    <filter id="textGlow" x="-10%" y="-25%" width="120%" height="150%">
+      <feDropShadow dx="0" dy="1" stdDeviation="6" flood-color="#E1306C" flood-opacity="0.35"/>
     </filter>
 
-    <!-- Clip for badge inner highlight -->
+    <!-- Clip inside badge -->
     <clipPath id="clip">
-      <rect x="3" y="3" width="90" height="90" rx="22"/>
+      <rect x="3" y="3" width="94" height="94" rx="24"/>
     </clipPath>
   </defs>
 
   <!-- ═══ BADGE ═══ -->
-  <rect x="3" y="3" width="90" height="90" rx="22" fill="url(#bg)" filter="url(#shadow)"/>
-  <!-- Top glass sheen -->
-  <rect x="3" y="3" width="90" height="48" rx="22" fill="white" opacity="0.06" clip-path="url(#clip)"/>
-  <!-- Bottom vignette -->
-  <ellipse cx="48" cy="88" rx="36" ry="12" fill="black" opacity="0.22" clip-path="url(#clip)"/>
+  <rect x="3" y="3" width="94" height="94" rx="24" fill="url(#bgGrad)" filter="url(#shadow)"/>
+
+  <!-- Inner highlight top-left -->
+  <rect x="3" y="3" width="94" height="50" rx="24" fill="white" opacity="0.04" clip-path="url(#clip)"/>
+
+  <!-- Brand accent line at bottom -->
+  <rect x="3" y="85" width="94" height="12" rx="0" fill="url(#brandGrad)" opacity="0.18" clip-path="url(#clip)"/>
+
   <!-- Border ring -->
-  <rect x="3" y="3" width="90" height="90" rx="22" fill="none" stroke="url(#ring)" stroke-width="1.3"/>
+  <rect x="3" y="3" width="94" height="94" rx="24" fill="none" stroke="url(#ringGrad)" stroke-width="1.5"/>
 
   <!-- ── Letter "L" ── -->
-  <path d="M30,17 L30,67 L64,67"
+  <path d="M32,18 L32,68 L66,68"
         stroke="url(#lGrad)"
         stroke-width="11"
         stroke-linecap="round"
@@ -84,41 +94,53 @@
         fill="none"
         filter="url(#lGlow)"/>
 
-  <!-- ── 4-Pointed Star at tip of L ── -->
-  <path d="M30,17 L32.6,24 L30,31 L27.4,24 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
-  <path d="M23,24 L30,21.4 L37,24 L30,26.6 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
-  <circle cx="30" cy="24" r="3.2" fill="white" filter="url(#starGlow)"/>
+  <!-- ── 4-Pointed Star at top of L ── -->
+  <path d="M32,18 L34.8,25.5 L32,33 L29.2,25.5 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <path d="M24.5,25.5 L32,22.8 L39.5,25.5 L32,28.2 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <circle cx="32" cy="25.5" r="3.5" fill="white" filter="url(#sparkGlow)"/>
 
-  <!-- Small secondary sparkle near foot of L -->
-  <path d="M65,58 L66.5,62.5 L65,67 L63.5,62.5 Z" fill="white" opacity="0.55" filter="url(#starGlow)"/>
-  <path d="M60.5,62.5 L65,61 L69.5,62.5 L65,64 Z" fill="white" opacity="0.55" filter="url(#starGlow)"/>
+  <!-- Small sparkle at foot of L -->
+  <path d="M67,58 L68.5,63 L67,68 L65.5,63 Z" fill="white" opacity="0.5" filter="url(#sparkGlow)"/>
+  <path d="M62,63 L67,61.2 L72,63 L67,64.8 Z" fill="white" opacity="0.5" filter="url(#sparkGlow)"/>
 
   <!-- Ambient dots -->
-  <circle cx="70" cy="20" r="1.8" fill="#ddd6fe" opacity="0.7"/>
-  <circle cx="60" cy="28" r="1.1" fill="white" opacity="0.4"/>
+  <circle cx="74" cy="20" r="2" fill="#fca5a5" opacity="0.6"/>
+  <circle cx="62" cy="29" r="1.2" fill="white" opacity="0.35"/>
 
-  <!-- ═══ SEPARATOR LINE ═══ -->
-  <line x1="108" y1="18" x2="108" y2="78" stroke="#7c3aed" stroke-width="1" opacity="0.4"/>
+  <!-- ═══ DIVIDER ═══ -->
+  <line x1="114" y1="20" x2="114" y2="80" stroke="url(#brandGrad)" stroke-width="1" opacity="0.35"/>
 
   <!-- ═══ WORDMARK ═══ -->
   <text
-    x="122" y="55"
+    x="128" y="56"
     font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-    font-size="38"
+    font-size="40"
     font-weight="800"
     letter-spacing="-0.5"
-    fill="url(#wordmark)"
+    fill="url(#wordGrad)"
     filter="url(#textGlow)"
   >Lumi</text>
 
+  <!-- IA badge pill -->
+  <rect x="249" y="30" width="28" height="14" rx="7"
+        fill="url(#brandGrad)" opacity="0.85"/>
+  <text x="263" y="41"
+    font-family="'Segoe UI', Arial, sans-serif"
+    font-size="7.5"
+    font-weight="700"
+    letter-spacing="0.8"
+    fill="white"
+    text-anchor="middle"
+  >IA</text>
+
   <!-- Tagline -->
   <text
-    x="124" y="72"
+    x="129" y="74"
     font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-    font-size="9"
+    font-size="8.5"
     font-weight="500"
-    letter-spacing="3.5"
-    fill="#a78bfa"
-    opacity="0.85"
+    letter-spacing="3.8"
+    fill="#E1306C"
+    opacity="0.75"
   >ASSISTENTE VIRTUAL</text>
 </svg>

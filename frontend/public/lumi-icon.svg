@@ -1,73 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
   <defs>
-    <!-- Vibrant purple radial background -->
-    <radialGradient id="bg" cx="36%" cy="28%" r="78%">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="55%" stop-color="#5b21b6"/>
-      <stop offset="100%" stop-color="#2e1065"/>
+    <!-- Badge background: dark -->
+    <radialGradient id="bg" cx="35%" cy="28%" r="80%">
+      <stop offset="0%" stop-color="#2a0a1f"/>
+      <stop offset="50%" stop-color="#1a0530"/>
+      <stop offset="100%" stop-color="#050509"/>
     </radialGradient>
 
-    <!-- L stroke: white → soft lavender -->
+    <!-- Brand gradient: pink → purple -->
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1306C"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+
+    <!-- L stroke gradient -->
     <linearGradient id="lGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#ddd6fe"/>
+      <stop offset="100%" stop-color="#f9a8d4"/>
     </linearGradient>
 
-    <!-- Outer border ring gradient -->
-    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.9"/>
-      <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.7"/>
+    <!-- Ring border gradient -->
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1306C" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="#9333ea" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#E1306C" stop-opacity="0.35"/>
     </linearGradient>
 
-    <!-- Sparkle gradient: pure white → icy lavender -->
+    <!-- Sparkle gradient -->
     <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
     </linearGradient>
 
-    <!-- Drop shadow under the whole badge -->
+    <!-- Shadow -->
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#4c1d95" flood-opacity="0.65"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#E1306C" flood-opacity="0.3"/>
     </filter>
 
-    <!-- Glow for the L stroke + dot -->
-    <filter id="lGlow" x="-25%" y="-20%" width="150%" height="140%">
-      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+    <!-- L glow -->
+    <filter id="lGlow" x="-30%" y="-25%" width="160%" height="150%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <!-- Glow for star sparkle -->
-    <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+    <!-- Sparkle glow -->
+    <filter id="sparkGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <!-- Clip so inner highlight stays inside rounded rect -->
+    <!-- Clip -->
     <clipPath id="clip">
       <rect x="3" y="3" width="90" height="90" rx="22"/>
     </clipPath>
   </defs>
 
-  <!-- Badge with shadow -->
+  <!-- Badge -->
   <rect x="3" y="3" width="90" height="90" rx="22" fill="url(#bg)" filter="url(#shadow)"/>
 
-  <!-- Top-left glass sheen -->
-  <rect x="3" y="3" width="90" height="48" rx="22" fill="white" opacity="0.06" clip-path="url(#clip)"/>
+  <!-- Top glass sheen -->
+  <rect x="3" y="3" width="90" height="48" rx="22" fill="white" opacity="0.05" clip-path="url(#clip)"/>
 
-  <!-- Subtle bottom vignette -->
-  <ellipse cx="48" cy="88" rx="36" ry="12" fill="black" opacity="0.22" clip-path="url(#clip)"/>
+  <!-- Brand accent at bottom -->
+  <rect x="3" y="80" width="90" height="13" rx="0" fill="url(#brandGrad)" opacity="0.15" clip-path="url(#clip)"/>
 
-  <!-- Border ring -->
-  <rect x="3" y="3" width="90" height="90" rx="22" fill="none" stroke="url(#ring)" stroke-width="1.3"/>
+  <!-- Ring -->
+  <rect x="3" y="3" width="90" height="90" rx="22" fill="none" stroke="url(#ringGrad)" stroke-width="1.5"/>
 
-  <!-- ── Letter "L" ── -->
+  <!-- Letter "L" -->
   <path d="M30,17 L30,67 L64,67"
         stroke="url(#lGrad)"
         stroke-width="11"
@@ -76,20 +82,16 @@
         fill="none"
         filter="url(#lGlow)"/>
 
-  <!-- ── 4-Pointed Star at tip of L ── -->
-  <!-- Vertical blade -->
-  <path d="M30,17 L32.6,24 L30,31 L27.4,24 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
-  <!-- Horizontal blade -->
-  <path d="M23,24 L30,21.4 L37,24 L30,26.6 Z" fill="url(#sparkGrad)" filter="url(#starGlow)"/>
+  <!-- 4-Pointed Star at top of L -->
+  <path d="M30,17 L32.6,24.5 L30,32 L27.4,24.5 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <path d="M22.5,24.5 L30,21.8 L37.5,24.5 L30,27.2 Z" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <circle cx="30" cy="24.5" r="3.2" fill="white" filter="url(#sparkGlow)"/>
 
-  <!-- Bright centre dot of the star -->
-  <circle cx="30" cy="24" r="3.2" fill="white" filter="url(#starGlow)"/>
+  <!-- Small sparkle at foot of L -->
+  <path d="M65,58 L66.5,62.5 L65,67 L63.5,62.5 Z" fill="white" opacity="0.5" filter="url(#sparkGlow)"/>
+  <path d="M60.5,62.5 L65,61 L69.5,62.5 L65,64 Z" fill="white" opacity="0.5" filter="url(#sparkGlow)"/>
 
-  <!-- Small secondary sparkle (bottom-right, near foot of L) -->
-  <path d="M65,58 L66.5,62.5 L65,67 L63.5,62.5 Z" fill="white" opacity="0.55" filter="url(#starGlow)"/>
-  <path d="M60.5,62.5 L65,61 L69.5,62.5 L65,64 Z" fill="white" opacity="0.55" filter="url(#starGlow)"/>
-
-  <!-- Tiny ambient dot (upper right) -->
-  <circle cx="70" cy="20" r="1.8" fill="#ddd6fe" opacity="0.7"/>
-  <circle cx="60" cy="28" r="1.1" fill="white" opacity="0.4"/>
+  <!-- Ambient dots -->
+  <circle cx="71" cy="19" r="2" fill="#fca5a5" opacity="0.6"/>
+  <circle cx="61" cy="27" r="1.2" fill="white" opacity="0.35"/>
 </svg>

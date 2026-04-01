@@ -73,6 +73,11 @@ DATABASE_URL="postgresql://postgres:[SUA-SENHA]@db.xxxxx.supabase.co:5432/postgr
 JWT_SECRET="sua-chave-secreta-jwt-aqui-mude-isso"
 PORT=3333
 NODE_ENV=development
+FRONTEND_URL="http://localhost:5173"
+
+# Reset de senha via Supabase Auth
+SUPABASE_URL="https://SEU-PROJETO.supabase.co"
+SUPABASE_SERVICE_KEY="sua_service_role_key"
 ```
 
 **Se estiver usando PostgreSQL Local:**
@@ -81,11 +86,17 @@ DATABASE_URL="postgresql://postgres:suasenha@localhost:5432/video_platform?schem
 JWT_SECRET="sua-chave-secreta-jwt-aqui-mude-isso"
 PORT=3333
 NODE_ENV=development
+FRONTEND_URL="http://localhost:5173"
+
+# Reset de senha via Supabase Auth
+SUPABASE_URL="https://SEU-PROJETO.supabase.co"
+SUPABASE_SERVICE_KEY="sua_service_role_key"
 ```
 
 **⚠️ IMPORTANTE:** 
 - Cole a URL exata que você copiou do Supabase (ou suas credenciais locais)
 - Troque `JWT_SECRET` por uma string aleatória e segura
+- Configure no Supabase Dashboard o redirect de recuperação para `/reset-password`
 
 ```bash
 # Gere o Prisma Client

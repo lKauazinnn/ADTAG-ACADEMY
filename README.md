@@ -54,12 +54,29 @@ cp .env.example .env
 # IMPORTANTE: Edite o arquivo .env e configure:
 # - Para Supabase: Cole a Connection String do seu projeto
 # - Para PostgreSQL local: Use postgresql://postgres:senha@localhost:5432/video_platform
+# - FRONTEND_URL: URL pública do frontend (usada no link de redefinição)
+# - SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS/SMTP_FROM para envio de email
 
 npx prisma generate
 npx prisma migrate dev --name init
 npx tsx prisma/seed.ts  # Dados de exemplo
 npm run dev
 ```
+
+### Reset de Senha (SMTP)
+
+Para o fluxo de `Esqueci minha senha` funcionar em produção, configure no `backend/.env`:
+
+```env
+FRONTEND_URL="https://seu-frontend.com"
+SMTP_HOST="smtp.seuprovedor.com"
+SMTP_PORT=587
+SMTP_USER="seu_email@dominio.com"
+SMTP_PASS="sua_senha_ou_app_password"
+SMTP_FROM="Plataforma de Vídeos <no-reply@dominio.com>"
+```
+
+Sem SMTP, o sistema não consegue enviar o e-mail de redefinição.
 
 ### Frontend
 

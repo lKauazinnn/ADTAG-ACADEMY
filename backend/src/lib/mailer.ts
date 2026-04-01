@@ -5,6 +5,7 @@ const smtpPort = Number(process.env.SMTP_PORT || 587);
 const smtpUser = process.env.SMTP_USER;
 const smtpPass = process.env.SMTP_PASS;
 const smtpFrom = process.env.SMTP_FROM || smtpUser;
+const smtpReplyTo = process.env.SMTP_REPLY_TO;
 
 const canSendEmail = !!smtpHost && !!smtpUser && !!smtpPass && !!smtpFrom;
 
@@ -29,6 +30,7 @@ export const sendPasswordResetEmail = async (to: string, userName: string, reset
   await transporter.sendMail({
     from: smtpFrom,
     to,
+    ...(smtpReplyTo ? { replyTo: smtpReplyTo } : {}),
     subject: 'Redefinição de senha - Plataforma de Vídeos',
     text: `Olá, ${userName}!\n\nRecebemos uma solicitação para redefinir sua senha.\n\nAcesse este link para criar uma nova senha:\n${resetUrl}\n\nEste link expira em 1 hora.\n\nSe você não solicitou essa alteração, ignore este e-mail.`,
     html: `
